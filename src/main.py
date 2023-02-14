@@ -173,299 +173,103 @@ def train(config):
 
         if (epoch) % config.validation_term == 0 or epoch == 1:
             model.eval()
-            if config.dataset == "thumos14":
-                validation_batch_index = 0
-                with open(datasets.target_path, "r") as json_fp:
-                    ground_truth_json = json.loads(json_fp.read())
-                detection_prediction_json = dict({"version": "VERSION 1.3", "results": {},
-                                                  "external_data":
-                                                      {"used": True,
-                                                       "details": "CNN is pre-trained on Kinetics-400"}})
+            with torch.no_grad():
+                if config.dataset == "thumos14":
+                    validation_batch_index = 0
+                    with open(datasets.target_path, "r") as json_fp:
+                        ground_truth_json = json.loads(json_fp.read())
+                    detection_prediction_json = dict({"version": "VERSION 1.3", "results": {},
+                                                      "external_data":
+                                                          {"used": True,
+                                                           "details": "CNN is pre-trained on Kinetics-400"}})
 
-                identities = sorted([datum.split()[0] for datum in validation_data.tf_data])
-                for video_idx, identity in enumerate(identities):
-                    feature_path = os.path.join(datasets.features_folder,
-                                                identity, "{}_features.npy".format(identity))
-                    features = np.load(feature_path)
-                    # feature_length = len(features)
+                    identities = sorted([datum.split()[0] for datum in validation_data.tf_data])
+                    for video_idx, identity in enumerate(identities):
+                        feature_path = os.path.join(datasets.features_folder,
+                                                    identity, "{}_features.npy".format(identity))
+                        features = np.load(feature_path)
+                        # feature_length = len(features)
 
-                    feature_width = config.feature_width
-                    testing_step = config.testing_step
+                        feature_width = config.feature_width
+                        testing_step = config.testing_step
 
-                    loop_index = 0
-                    all_pred_logits = list()
-                    all_pred_segments = list()
-                    for start_idx in range(0, len(features), testing_step):
-                        this_features = features[start_idx:start_idx + feature_width]
+                        loop_index = 0
+                        all_pred_logits = list()
+                        all_pred_segments = list()
+                        for start_idx in range(0, len(features), testing_step):
+                            this_features = features[start_idx:start_idx + feature_width]
 
-                        if len(this_features) < feature_width:
-                            this_features = \
-                                np.concatenate([this_features,
-                                                np.tile(np.expand_dims(np.zeros_like(this_features[0]), axis=0),
-                                                        (config.feature_width - len(this_features), 1))],
-                                               axis=0)
+                            if len(this_features) < feature_width:
+                                this_features = \
+                                    np.concatenate([this_features,
+                                                    np.tile(np.expand_dims(np.zeros_like(this_features[0]), axis=0),
+                                                            (config.feature_width - len(this_features), 1))],
+                                                   axis=0)
 
-                        this_features = torch.from_numpy(this_features).transpose(0, 1).cuda()
+                            this_features = torch.from_numpy(this_features).transpose(0, 1).cuda()
 
-                        predictions = model(this_features.unsqueeze(0))
-                        pred_logits = predictions["pred_logits"].squeeze(0).sigmoid().detach().cpu().numpy()
-                        pred_segments = segment_ops.segment_cw_to_t1t2(predictions["pred_segments"].squeeze(0))
-                        pred_segments = pred_segments.detach().cpu().numpy()
-                        all_pred_logits.append(pred_logits)
-                        all_pred_segments.append(pred_segments)
+                            predictions = model(this_features.unsqueeze(0))
+                            pred_logits = predictions["pred_logits"].squeeze(0).sigmoid().detach().cpu().numpy()
+                            pred_segments = segment_ops.segment_cw_to_t1t2(predictions["pred_segments"].squeeze(0))
+                            pred_segments = pred_segments.detach().cpu().numpy()
+                            all_pred_logits.append(pred_logits)
+                            all_pred_segments.append(pred_segments)
 
-                        loop_index += 1
+                            loop_index += 1
 
-                    '''
-                    Localization
-                    '''
-                    frame_length = validation_data.frame_lengths[identity]
+                        '''
+                        Localization
+                        '''
+                        frame_length = validation_data.frame_lengths[identity]
 
-                    all_class_indices = list()
-                    all_start_indices = list()
-                    all_end_indices = list()
-                    all_scores = list()
-                    num_loops = len(all_pred_logits)
-                    for loop_index in range(num_loops):
-                        this_pred_logits = all_pred_logits[loop_index]
-                        this_pred_segments = all_pred_segments[loop_index]
+                        all_class_indices = list()
+                        all_start_indices = list()
+                        all_end_indices = list()
+                        all_scores = list()
+                        num_loops = len(all_pred_logits)
+                        for loop_index in range(num_loops):
+                            this_pred_logits = all_pred_logits[loop_index]
+                            this_pred_segments = all_pred_segments[loop_index]
 
-                        p_s = this_pred_segments[..., 0]
-                        p_e = this_pred_segments[..., 1]
-                        scores = np.max(this_pred_logits, axis=-1)
+                            p_s = this_pred_segments[..., 0]
+                            p_e = this_pred_segments[..., 1]
+                            scores = np.max(this_pred_logits, axis=-1)
 
-                        valid_flags = p_e >= p_s
-                        p_s = p_s[valid_flags]
-                        p_e = p_e[valid_flags]
-                        scores = scores[valid_flags]
+                            valid_flags = p_e >= p_s
+                            p_s = p_s[valid_flags]
+                            p_e = p_e[valid_flags]
+                            scores = scores[valid_flags]
 
-                        class_indices = np.argmax(this_pred_logits, axis=-1)
-                        class_indices += 1
+                            class_indices = np.argmax(this_pred_logits, axis=-1)
+                            class_indices += 1
 
-                        start_indices = np.round(p_s * frame_length)
-                        start_indices = np.clip(start_indices, 1, frame_length)
-                        end_indices = np.round(p_e * frame_length)
-                        end_indices = np.clip(end_indices, 1, frame_length)
+                            start_indices = np.round(p_s * frame_length)
+                            start_indices = np.clip(start_indices, 1, frame_length)
+                            end_indices = np.round(p_e * frame_length)
+                            end_indices = np.clip(end_indices, 1, frame_length)
 
-                        valid_flags = end_indices - start_indices + 1 >= config.feature_frame_step_size
+                            valid_flags = end_indices - start_indices + 1 >= config.feature_frame_step_size
 
-                        class_indices = class_indices[valid_flags]
-                        start_indices = start_indices[valid_flags]
-                        end_indices = end_indices[valid_flags]
-                        scores = scores[valid_flags]
+                            class_indices = class_indices[valid_flags]
+                            start_indices = start_indices[valid_flags]
+                            end_indices = end_indices[valid_flags]
+                            scores = scores[valid_flags]
 
-                        all_class_indices.append(class_indices)
-                        all_start_indices.append(start_indices)
-                        all_end_indices.append(end_indices)
-                        all_scores.append(scores)
+                            all_class_indices.append(class_indices)
+                            all_start_indices.append(start_indices)
+                            all_end_indices.append(end_indices)
+                            all_scores.append(scores)
 
-                    all_class_indices = np.concatenate(all_class_indices, axis=0)
-                    all_start_indices = np.concatenate(all_start_indices, axis=0)
-                    all_end_indices = np.concatenate(all_end_indices, axis=0)
-                    all_scores = np.concatenate(all_scores, axis=0)
-
-                    video_prediction_slices = \
-                        pd.DataFrame(data={"class_index": all_class_indices,
-                                           "start_index": all_start_indices,
-                                           "end_index": all_end_indices,
-                                           "score": all_scores})
-
-                    if not config.use_soft_nms:
-                        if config.use_classification:
-                            nmsed_detection_slices = list()
-                            video_prediction_slices = video_prediction_slices.groupby("class_index")
-                            for class_index, slices in video_prediction_slices:
-                                slices = slices.values
-                                slices = nms(slices, threshold=config.nms_threshold)
-                                nmsed_detection_slices += slices.tolist()
-                        else:
-                            slices = video_prediction_slices.values
-                            slices = nms(slices, threshold=config.nms_threshold)
-                            nmsed_detection_slices = slices.tolist()
-
-                        nmsed_detection_slices.sort(reverse=True, key=lambda x: x[-1])
-                        nmsed_detection_slices = nmsed_detection_slices[:100]
-                    else:
-                        scores = torch.from_numpy(scores).float()
-                        labels = torch.from_numpy(class_indices)
-                        boxes = torch.from_numpy(np.stack((start_indices, end_indices), axis=-1)).float()
-                        boxes, scores, labels = batched_nms(
-                            boxes.contiguous(), scores.contiguous(), labels.contiguous(),
-                            config.iou_threshold,
-                            config.min_score,
-                            config.max_seg_num,
-                            use_soft_nms=True,
-                            multiclass=config.multiclass_nms,
-                            sigma=config.nms_sigma,
-                            voting_thresh=config.voting_thresh)
-                        boxes = torch.where(boxes.isnan(), torch.zeros_like(boxes), boxes).numpy()
-                        labels = torch.where(labels.isnan(), torch.zeros_like(labels), labels).numpy()
-                        scores = torch.where(scores.isnan(), torch.zeros_like(scores), scores).numpy()
-                        nmsed_detection_slices = np.concatenate((labels[..., None], boxes, scores[..., None]),
-                                                                axis=-1)
-
-                    detection_prediction_json["results"][identity] = list()
-                    for prediction_slice in nmsed_detection_slices:
-                        score = prediction_slice[-1]
-                        prediction_class = int(prediction_slice[0])
-                        label = datasets.label_dic[str(prediction_class)].replace("_", " ")
-                        frame_intervals = [prediction_slice[1], prediction_slice[2]]
-                        # time_intervals = [float(frame_intervals[0]) / config.video_fps,
-                        #                   float(frame_intervals[1]) / config.dataset.video_fps]
-                        time_intervals = [float(frame_intervals[0] - 1) / (frame_length - 1) *
-                                          datasets.meta_dic["database"][identity]["duration"],
-                                          float(frame_intervals[1] - 1) / (frame_length - 1) *
-                                          datasets.meta_dic["database"][identity]["duration"]]
-
-                        detection_prediction_json["results"][identity].append(
-                            {"label": label, "score": score, "segment": time_intervals})
-
-                        if config.dataset == "thumos14" and label == "CliffDiving":
-                            detection_prediction_json["results"][identity].append(
-                                {"label": "Diving", "score": score, "segment": time_intervals})
-
-                    gc.collect()
-                    print_string = \
-                        "|{:10s}|Epoch {:3d}/{:3d}|Batch {:3d}/{:3d}|Loss: {:.2f}".format(
-                            "Validation", epoch, config.epochs, validation_batch_index + 1, len(identities), 0.0)
-                    progress_step = validation_batch_index + 1
-                    progress_length = len(identities)
-                    print_string += \
-                        " |{}{}|".format(
-                            "=" * int(round(37.0 * float(progress_step) / float(progress_length))),
-                            " " * (37 - int(round(37.0 * float(progress_step) / float(progress_length)))))
-                    sys.stdout.write("\r" + print_string)
-                    sys.stdout.flush()
-
-                    validation_batch_index += 1
-
-                print()
-
-                try:
-                    anet_detection = ANETdetection(ground_truth_json,
-                                                   detection_prediction_json,
-                                                   subset="validation", check_status=False,
-                                                   tiou_thresholds=np.arange(0.3, 0.8, 0.1))
-
-                    interpolated_mAP = anet_detection.evaluate()
-                    overall_interpolated_mAP = interpolated_mAP.mean()
-                    validation_mAP = overall_interpolated_mAP
-                except:
-                    validation_mAP = 0.0
-
-
-                validation_summary_writer.add_scalar("mAP", validation_mAP, epoch)
-
-                validation_quality = validation_mAP
-
-                if validation_quality >= best_validation:
-                    best_validation = validation_quality
-                    if previous_best_epoch and previous_best_epoch != epoch - config.ckpt_save_term:
-                        weight_files = glob.glob(os.path.join(save_ckpt_file_folder,
-                                                              "weights-{}.pt".format(previous_best_epoch)))
-                        for file in weight_files:
-                            try:
-                                os.remove(file)
-                            except OSError:
-                                pass
-
-                    if epoch % config.ckpt_save_term != 0:
-                        torch.save(model.state_dict(),
-                                   os.path.join(save_ckpt_file_folder, "weights-{}.pt".format(epoch)))
-                    previous_best_epoch = epoch
-
-                print("Validation Results ...")
-                print("Validation Localization mAP {:.5f}".format(validation_mAP))
-                print("=" * 90)
-            else:
-                valid_num = 0.0
-                validation_mAP = 0.0
-                validation_batch_index = 0
-                validation_losses = dict()
-
-                loop_rounds = \
-                    int(math.ceil(float(validation_data.data_count) / float(config.batch_size * config.num_gpus)))
-
-                with open(datasets.target_path, "r") as json_fp:
-                    ground_truth_json = json.loads(json_fp.read())
-                detection_prediction_json = dict({"version": "VERSION 1.3", "results": {},
-                                                  "external_data":
-                                                      {"used": True,
-                                                       "details": "CNN is pre-trained on Kinetics-400"}})
-
-                for features, targets, identities, frame_lengths in validation_data.dataloader:
-                    features = features.cuda()
-                    target_dict = list()
-                    for b_i in range(len(targets)):
-                        batch_dict = dict()
-                        batch_dict["labels"] = list()
-                        batch_dict["segments"] = list()
-                        for t_i, t in enumerate(targets[b_i]):
-                            if t[0] <= 0.0:
-                                break
-                            batch_dict["labels"].append(t[1])
-                            batch_dict["segments"].append(t[2:])
-                        if len(batch_dict["labels"]):
-                            batch_dict["labels"] = torch.stack(batch_dict["labels"], dim=0).long().cuda()
-                            batch_dict["segments"] = torch.stack(batch_dict["segments"], dim=0).float().cuda()
-                        target_dict.append(batch_dict)
-
-                    predictions = model(features)
-                    pred_logits = predictions["pred_logits"].sigmoid().detach().cpu().numpy()
-                    pred_segments = segment_ops.segment_cw_to_t1t2(predictions["pred_segments"])
-                    pred_segments = pred_segments.detach().cpu().numpy()
-                    loss_dict = criterion(predictions, target_dict)
-
-                    weight_dict = criterion.weight_dict
-                    losses = sum(loss_dict[k] * weight_dict[k] for k in loss_dict.keys() if k in weight_dict)
-
-                    loss = losses.item()
-                    for loss_name, loss_value in loss_dict.items():
-                        if loss_name not in validation_losses.keys():
-                            validation_losses[loss_name] = loss_value.item()
-                        else:
-                            validation_losses[loss_name] += loss_value.item()
-                    valid_num += len(identities)
-
-                    frame_lengths = frame_lengths.numpy()
-                    for n_i in range(len(identities)):
-                        identity = identities[n_i]
-                        frame_length = frame_lengths[n_i]
-                        cuhk_classification_scores = np.array(all_anet2017_cuhk["results"][identity])
-
-                        this_pred_logits = pred_logits[n_i]
-                        this_pred_segments = pred_segments[n_i]
-
-                        p_s = this_pred_segments[..., 0]
-                        p_e = this_pred_segments[..., 1]
-                        scores = np.max(this_pred_logits, axis=-1)
-
-                        valid_flags = p_e >= p_s
-                        p_s = p_s[valid_flags]
-                        p_e = p_e[valid_flags]
-                        scores = scores[valid_flags]
-
-                        classification = this_pred_logits + np.expand_dims(cuhk_classification_scores, axis=0)
-                        class_indices = np.argmax(classification, axis=-1)
-                        class_indices += 1
-
-                        start_indices = np.round(p_s * frame_length)
-                        start_indices = np.clip(start_indices, 1, frame_length)
-                        end_indices = np.round(p_e * frame_length)
-                        end_indices = np.clip(end_indices, 1, frame_length)
-
-                        valid_flags = end_indices - start_indices + 1 >= config.feature_frame_step_size
-
-                        class_indices = class_indices[valid_flags]
-                        start_indices = start_indices[valid_flags]
-                        end_indices = end_indices[valid_flags]
-                        scores = scores[valid_flags]
+                        all_class_indices = np.concatenate(all_class_indices, axis=0)
+                        all_start_indices = np.concatenate(all_start_indices, axis=0)
+                        all_end_indices = np.concatenate(all_end_indices, axis=0)
+                        all_scores = np.concatenate(all_scores, axis=0)
 
                         video_prediction_slices = \
-                            pd.DataFrame(data={"class_index": class_indices,
-                                               "start_index": start_indices,
-                                               "end_index": end_indices,
-                                               "score": scores})
+                            pd.DataFrame(data={"class_index": all_class_indices,
+                                               "start_index": all_start_indices,
+                                               "end_index": all_end_indices,
+                                               "score": all_scores})
 
                         if not config.use_soft_nms:
                             if config.use_classification:
@@ -508,12 +312,11 @@ def train(config):
                             label = datasets.label_dic[str(prediction_class)].replace("_", " ")
                             frame_intervals = [prediction_slice[1], prediction_slice[2]]
                             # time_intervals = [float(frame_intervals[0]) / config.video_fps,
-                            #                   float(frame_intervals[1]) / config.video_fps]
-                            time_intervals = [
-                                float(frame_intervals[0] - 1) / (frame_length - 1) *
-                                datasets.meta_dic["database"][identity]["duration"],
-                                float(frame_intervals[1] - 1) / (frame_length - 1) *
-                                datasets.meta_dic["database"][identity]["duration"]]
+                            #                   float(frame_intervals[1]) / config.dataset.video_fps]
+                            time_intervals = [float(frame_intervals[0] - 1) / (frame_length - 1) *
+                                              datasets.meta_dic["database"][identity]["duration"],
+                                              float(frame_intervals[1] - 1) / (frame_length - 1) *
+                                              datasets.meta_dic["database"][identity]["duration"]]
 
                             detection_prediction_json["results"][identity].append(
                                 {"label": label, "score": score, "segment": time_intervals})
@@ -522,28 +325,28 @@ def train(config):
                                 detection_prediction_json["results"][identity].append(
                                     {"label": "Diving", "score": score, "segment": time_intervals})
 
-                    print_string = \
-                        "|{:10s}|Epoch {:3d}/{:3d}|Batch {:3d}/{:3d}|Loss: {:.2f}".format(
-                            "Validation", epoch, config.epochs, validation_batch_index + 1, loop_rounds, loss)
-                    progress_step = validation_batch_index + 1
-                    progress_length = loop_rounds
-                    print_string += \
-                        " |{}{}|".format(
-                            "=" * int(round(37.0 * float(progress_step) / float(progress_length))),
-                            " " * (37 - int(round(37.0 * float(progress_step) / float(progress_length)))))
-                    sys.stdout.write("\r" + print_string)
-                    sys.stdout.flush()
+                        gc.collect()
+                        print_string = \
+                            "|{:10s}|Epoch {:3d}/{:3d}|Batch {:3d}/{:3d}|Loss: {:.2f}".format(
+                                "Validation", epoch, config.epochs, validation_batch_index + 1, len(identities), 0.0)
+                        progress_step = validation_batch_index + 1
+                        progress_length = len(identities)
+                        print_string += \
+                            " |{}{}|".format(
+                                "=" * int(round(37.0 * float(progress_step) / float(progress_length))),
+                                " " * (37 - int(round(37.0 * float(progress_step) / float(progress_length)))))
+                        sys.stdout.write("\r" + print_string)
+                        sys.stdout.flush()
 
-                    validation_batch_index += 1
+                        validation_batch_index += 1
 
-                print()
+                    print()
 
-                if config.dataset == "activitynet":
                     try:
                         anet_detection = ANETdetection(ground_truth_json,
                                                        detection_prediction_json,
-                                                       subset="validation", check_status=True,
-                                                       tiou_thresholds=np.linspace(0.5, 0.95, 10))
+                                                       subset="validation", check_status=False,
+                                                       tiou_thresholds=np.arange(0.3, 0.8, 0.1))
 
                         interpolated_mAP = anet_detection.evaluate()
                         overall_interpolated_mAP = interpolated_mAP.mean()
@@ -551,32 +354,230 @@ def train(config):
                     except:
                         validation_mAP = 0.0
 
-                for loss_name, loss_value in validation_losses.items():
-                    validation_summary_writer.add_scalar(loss_name, loss_value / float(validation_batch_index),
-                                                         epoch)
-                validation_summary_writer.add_scalar("mAP", validation_mAP, epoch)
 
-                validation_quality = validation_mAP
+                    validation_summary_writer.add_scalar("mAP", validation_mAP, epoch)
 
-                if validation_quality >= best_validation:
-                    best_validation = validation_quality
-                    if previous_best_epoch and previous_best_epoch != epoch - config.ckpt_save_term:
-                        weight_files = glob.glob(os.path.join(save_ckpt_file_folder,
-                                                              "weights-{}.pt".format(previous_best_epoch)))
-                        for file in weight_files:
-                            try:
-                                os.remove(file)
-                            except OSError:
-                                pass
+                    validation_quality = validation_mAP
 
-                    if epoch % config.ckpt_save_term != 0:
-                        torch.save(model.state_dict(),
-                                   os.path.join(save_ckpt_file_folder, "weights-{}.pt".format(epoch)))
-                    previous_best_epoch = epoch
+                    if validation_quality >= best_validation:
+                        best_validation = validation_quality
+                        if previous_best_epoch and previous_best_epoch != epoch - config.ckpt_save_term:
+                            weight_files = glob.glob(os.path.join(save_ckpt_file_folder,
+                                                                  "weights-{}.pt".format(previous_best_epoch)))
+                            for file in weight_files:
+                                try:
+                                    os.remove(file)
+                                except OSError:
+                                    pass
 
-                print("Validation Results ...")
-                print("Validation Localization mAP {:.5f}".format(validation_mAP))
-                print("=" * 90)
+                        if epoch % config.ckpt_save_term != 0:
+                            torch.save(model.state_dict(),
+                                       os.path.join(save_ckpt_file_folder, "weights-{}.pt".format(epoch)))
+                        previous_best_epoch = epoch
+
+                    print("Validation Results ...")
+                    print("Validation Localization mAP {:.5f}".format(validation_mAP))
+                    print("=" * 90)
+                else:
+                    valid_num = 0.0
+                    validation_mAP = 0.0
+                    validation_batch_index = 0
+                    validation_losses = dict()
+
+                    loop_rounds = \
+                        int(math.ceil(float(validation_data.data_count) / float(config.batch_size * config.num_gpus)))
+
+                    with open(datasets.target_path, "r") as json_fp:
+                        ground_truth_json = json.loads(json_fp.read())
+                    detection_prediction_json = dict({"version": "VERSION 1.3", "results": {},
+                                                      "external_data":
+                                                          {"used": True,
+                                                           "details": "CNN is pre-trained on Kinetics-400"}})
+
+                    for features, targets, identities, frame_lengths in validation_data.dataloader:
+                        features = features.cuda()
+                        target_dict = list()
+                        for b_i in range(len(targets)):
+                            batch_dict = dict()
+                            batch_dict["labels"] = list()
+                            batch_dict["segments"] = list()
+                            for t_i, t in enumerate(targets[b_i]):
+                                if t[0] <= 0.0:
+                                    break
+                                batch_dict["labels"].append(t[1])
+                                batch_dict["segments"].append(t[2:])
+                            if len(batch_dict["labels"]):
+                                batch_dict["labels"] = torch.stack(batch_dict["labels"], dim=0).long().cuda()
+                                batch_dict["segments"] = torch.stack(batch_dict["segments"], dim=0).float().cuda()
+                            target_dict.append(batch_dict)
+
+                        predictions = model(features)
+                        pred_logits = predictions["pred_logits"].sigmoid().detach().cpu().numpy()
+                        pred_segments = segment_ops.segment_cw_to_t1t2(predictions["pred_segments"])
+                        pred_segments = pred_segments.detach().cpu().numpy()
+                        loss_dict = criterion(predictions, target_dict)
+
+                        weight_dict = criterion.weight_dict
+                        losses = sum(loss_dict[k] * weight_dict[k] for k in loss_dict.keys() if k in weight_dict)
+
+                        loss = losses.item()
+                        for loss_name, loss_value in loss_dict.items():
+                            if loss_name not in validation_losses.keys():
+                                validation_losses[loss_name] = loss_value.item()
+                            else:
+                                validation_losses[loss_name] += loss_value.item()
+                        valid_num += len(identities)
+
+                        frame_lengths = frame_lengths.numpy()
+                        for n_i in range(len(identities)):
+                            identity = identities[n_i]
+                            frame_length = frame_lengths[n_i]
+                            cuhk_classification_scores = np.array(all_anet2017_cuhk["results"][identity])
+
+                            this_pred_logits = pred_logits[n_i]
+                            this_pred_segments = pred_segments[n_i]
+
+                            p_s = this_pred_segments[..., 0]
+                            p_e = this_pred_segments[..., 1]
+                            scores = np.max(this_pred_logits, axis=-1)
+
+                            valid_flags = p_e >= p_s
+                            p_s = p_s[valid_flags]
+                            p_e = p_e[valid_flags]
+                            scores = scores[valid_flags]
+
+                            classification = this_pred_logits + np.expand_dims(cuhk_classification_scores, axis=0)
+                            class_indices = np.argmax(classification, axis=-1)
+                            class_indices += 1
+
+                            start_indices = np.round(p_s * frame_length)
+                            start_indices = np.clip(start_indices, 1, frame_length)
+                            end_indices = np.round(p_e * frame_length)
+                            end_indices = np.clip(end_indices, 1, frame_length)
+
+                            valid_flags = end_indices - start_indices + 1 >= config.feature_frame_step_size
+
+                            class_indices = class_indices[valid_flags]
+                            start_indices = start_indices[valid_flags]
+                            end_indices = end_indices[valid_flags]
+                            scores = scores[valid_flags]
+
+                            video_prediction_slices = \
+                                pd.DataFrame(data={"class_index": class_indices,
+                                                   "start_index": start_indices,
+                                                   "end_index": end_indices,
+                                                   "score": scores})
+
+                            if not config.use_soft_nms:
+                                if config.use_classification:
+                                    nmsed_detection_slices = list()
+                                    video_prediction_slices = video_prediction_slices.groupby("class_index")
+                                    for class_index, slices in video_prediction_slices:
+                                        slices = slices.values
+                                        slices = nms(slices, threshold=config.nms_threshold)
+                                        nmsed_detection_slices += slices.tolist()
+                                else:
+                                    slices = video_prediction_slices.values
+                                    slices = nms(slices, threshold=config.nms_threshold)
+                                    nmsed_detection_slices = slices.tolist()
+
+                                nmsed_detection_slices.sort(reverse=True, key=lambda x: x[-1])
+                                nmsed_detection_slices = nmsed_detection_slices[:100]
+                            else:
+                                scores = torch.from_numpy(scores).float()
+                                labels = torch.from_numpy(class_indices)
+                                boxes = torch.from_numpy(np.stack((start_indices, end_indices), axis=-1)).float()
+                                boxes, scores, labels = batched_nms(
+                                    boxes.contiguous(), scores.contiguous(), labels.contiguous(),
+                                    config.iou_threshold,
+                                    config.min_score,
+                                    config.max_seg_num,
+                                    use_soft_nms=True,
+                                    multiclass=config.multiclass_nms,
+                                    sigma=config.nms_sigma,
+                                    voting_thresh=config.voting_thresh)
+                                boxes = torch.where(boxes.isnan(), torch.zeros_like(boxes), boxes).numpy()
+                                labels = torch.where(labels.isnan(), torch.zeros_like(labels), labels).numpy()
+                                scores = torch.where(scores.isnan(), torch.zeros_like(scores), scores).numpy()
+                                nmsed_detection_slices = np.concatenate((labels[..., None], boxes, scores[..., None]),
+                                                                        axis=-1)
+
+                            detection_prediction_json["results"][identity] = list()
+                            for prediction_slice in nmsed_detection_slices:
+                                score = prediction_slice[-1]
+                                prediction_class = int(prediction_slice[0])
+                                label = datasets.label_dic[str(prediction_class)].replace("_", " ")
+                                frame_intervals = [prediction_slice[1], prediction_slice[2]]
+                                # time_intervals = [float(frame_intervals[0]) / config.video_fps,
+                                #                   float(frame_intervals[1]) / config.video_fps]
+                                time_intervals = [
+                                    float(frame_intervals[0] - 1) / (frame_length - 1) *
+                                    datasets.meta_dic["database"][identity]["duration"],
+                                    float(frame_intervals[1] - 1) / (frame_length - 1) *
+                                    datasets.meta_dic["database"][identity]["duration"]]
+
+                                detection_prediction_json["results"][identity].append(
+                                    {"label": label, "score": score, "segment": time_intervals})
+
+                                if config.dataset == "thumos14" and label == "CliffDiving":
+                                    detection_prediction_json["results"][identity].append(
+                                        {"label": "Diving", "score": score, "segment": time_intervals})
+
+                        print_string = \
+                            "|{:10s}|Epoch {:3d}/{:3d}|Batch {:3d}/{:3d}|Loss: {:.2f}".format(
+                                "Validation", epoch, config.epochs, validation_batch_index + 1, loop_rounds, loss)
+                        progress_step = validation_batch_index + 1
+                        progress_length = loop_rounds
+                        print_string += \
+                            " |{}{}|".format(
+                                "=" * int(round(37.0 * float(progress_step) / float(progress_length))),
+                                " " * (37 - int(round(37.0 * float(progress_step) / float(progress_length)))))
+                        sys.stdout.write("\r" + print_string)
+                        sys.stdout.flush()
+
+                        validation_batch_index += 1
+
+                    print()
+
+                    if config.dataset == "activitynet":
+                        try:
+                            anet_detection = ANETdetection(ground_truth_json,
+                                                           detection_prediction_json,
+                                                           subset="validation", check_status=True,
+                                                           tiou_thresholds=np.linspace(0.5, 0.95, 10))
+
+                            interpolated_mAP = anet_detection.evaluate()
+                            overall_interpolated_mAP = interpolated_mAP.mean()
+                            validation_mAP = overall_interpolated_mAP
+                        except:
+                            validation_mAP = 0.0
+
+                    for loss_name, loss_value in validation_losses.items():
+                        validation_summary_writer.add_scalar(loss_name, loss_value / float(validation_batch_index),
+                                                             epoch)
+                    validation_summary_writer.add_scalar("mAP", validation_mAP, epoch)
+
+                    validation_quality = validation_mAP
+
+                    if validation_quality >= best_validation:
+                        best_validation = validation_quality
+                        if previous_best_epoch and previous_best_epoch != epoch - config.ckpt_save_term:
+                            weight_files = glob.glob(os.path.join(save_ckpt_file_folder,
+                                                                  "weights-{}.pt".format(previous_best_epoch)))
+                            for file in weight_files:
+                                try:
+                                    os.remove(file)
+                                except OSError:
+                                    pass
+
+                        if epoch % config.ckpt_save_term != 0:
+                            torch.save(model.state_dict(),
+                                       os.path.join(save_ckpt_file_folder, "weights-{}.pt".format(epoch)))
+                        previous_best_epoch = epoch
+
+                    print("Validation Results ...")
+                    print("Validation Localization mAP {:.5f}".format(validation_mAP))
+                    print("=" * 90)
 
 
 def nms(proposals, threshold=0.65):
