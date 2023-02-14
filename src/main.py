@@ -100,15 +100,15 @@ def train(config):
             for b_i in range(len(targets)):
                 batch_dict = dict()
                 batch_dict["labels"] = list()
-                batch_dict["boxes"] = list()
+                batch_dict["segments"] = list()
                 for t_i, t in enumerate(targets[b_i]):
                     if t[0] <= 0.0:
                         break
                     batch_dict["labels"].append(t[1])
-                    batch_dict["boxes"].append(t[2:])
+                    batch_dict["segments"].append(t[2:])
                 if len(batch_dict["labels"]):
                     batch_dict["labels"] = torch.stack(batch_dict["labels"], dim=0).long().cuda()
-                    batch_dict["boxes"] = torch.stack(batch_dict["boxes"], dim=0).float().cuda()
+                    batch_dict["segments"] = torch.stack(batch_dict["segments"], dim=0).float().cuda()
                 target_dict.append(batch_dict)
 
             epoch_preprocessing_time += time.time() - preprocessing_start_time
@@ -513,15 +513,15 @@ def train(config):
                     for b_i in range(len(targets)):
                         batch_dict = dict()
                         batch_dict["labels"] = list()
-                        batch_dict["boxes"] = list()
+                        batch_dict["segments"] = list()
                         for t_i, t in enumerate(targets[b_i]):
                             if t[0] <= 0.0:
                                 break
                             batch_dict["labels"].append(t[1])
-                            batch_dict["boxes"].append(t[2:])
+                            batch_dict["segments"].append(t[2:])
                         if len(batch_dict["labels"]):
                             batch_dict["labels"] = torch.stack(batch_dict["labels"], dim=0).long().cuda()
-                            batch_dict["boxes"] = torch.stack(batch_dict["boxes"], dim=0).float().cuda()
+                            batch_dict["segments"] = torch.stack(batch_dict["segments"], dim=0).float().cuda()
                         target_dict.append(batch_dict)
 
                     predictions = model(features)
