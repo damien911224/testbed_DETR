@@ -591,11 +591,12 @@ class MLP(nn.Module):
 def build(args):
     pos_embed = build_position_encoding(args)
     transformer = build_transformer(args)
+    num_classes = args.number_of_classes - 1
 
     model = DABDETR(
         pos_embed,
         transformer,
-        num_classes=args.number_of_classes,
+        num_classes=num_classes,
         num_queries=args.num_queries,
         aux_loss=args.aux_loss,
         with_segment_refine=args.seg_refine,
@@ -628,7 +629,7 @@ def build(args):
         aux_weight_dict.update({k + f'_enc': v for k, v in weight_dict.items()})
         weight_dict.update(aux_weight_dict)
 
-    criterion = SetCriterion(args.number_of_classes, matcher, weight_dict, losses, focal_alpha=args.focal_alpha)
+    criterion = SetCriterion(num_classes, matcher, weight_dict, losses, focal_alpha=args.focal_alpha)
 
     # postprocessor = PostProcess()
     # return model, criterion, postprocessor
