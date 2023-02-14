@@ -328,11 +328,10 @@ class Datasets():
 
             features = np.array(features, dtype=np.float32)
 
-            # if self.datasets.config.dataset == "thumos14":
-            #     copy_paste = False
-            # else:
-            #     copy_paste = random.choice([True, False])
-            copy_paste = False
+            if self.datasets.config.dataset == "thumos14":
+                copy_paste = False
+            else:
+                copy_paste = random.choice([True, False])
             if copy_paste:
                 while True:
                     source_splits = random.choice(self.tf_data).split(" ")
@@ -426,6 +425,9 @@ class Datasets():
 
             W, C = action_targets.shape
 
+            target_slices = np.asarray(target_slices, dtype=np.float32)
+            target_slices[:, :2] = target_slices[:, :2] / (self.datasets.config.feature_width - 1)
+            target_slices[:, :2] = np.clip(target_slices[:, :2], 0.0, 1.0)
             detection_targets = np.zeros(dtype=np.float32, shape=(W, 4))
             if len(target_slices):
                 foreground_segments = target_slices
