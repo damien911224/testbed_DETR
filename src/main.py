@@ -641,7 +641,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
 
     argparser.add_argument("--num_gpus", type=int, default=1)
-    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][1])
+    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][0])
     argparser.add_argument("--postfix", type=str, default=None)
 
     args = argparser.parse_args()
