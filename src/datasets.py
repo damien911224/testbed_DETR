@@ -437,7 +437,7 @@ class Datasets():
                               (foreground_segments[:, 0] + foreground_segments[:, 1]) / 2,
                               (foreground_segments[:, 1] - foreground_segments[:, 0])), axis=-1)
 
-            features = torch.from_numpy(features)
+            features = torch.from_numpy(features).permute(1, 0)
             targets = torch.from_numpy(detection_targets)
 
             return features, targets, identity, frame_length
@@ -646,7 +646,7 @@ class Datasets():
                               (foreground_segments[:, 0] + foreground_segments[:, 1]) / 2,
                               (foreground_segments[:, 1] - foreground_segments[:, 0])), axis=-1)
 
-            features = torch.from_numpy(features)
+            features = torch.from_numpy(features).permute(1, 0)
             targets = torch.from_numpy(detection_targets)
 
             return features, targets, identity, frame_length
