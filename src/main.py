@@ -51,11 +51,7 @@ def train(config):
     train_summary_file_path = os.path.join(summary_folder, "train_summary")
     validation_summary_file_path = os.path.join(summary_folder, "validation_summary")
 
-    if config.dataset == "thumos14":
-        boundaries = [1000, 1100]
-    else:
-        boundaries = [80, 100]
-
+    boundaries = (round(config.epochs * 0.8), round(config.epochs * 0.9))
     optimizer = torch.optim.AdamW(model.parameters(), lr=config.lr, weight_decay=config.weight_decay)
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, boundaries, gamma=0.1)
 
@@ -654,7 +650,7 @@ if __name__ == "__main__":
 
             # train
             "seed": 2023,
-            "epochs": 1200 if args.dataset == "thumos14" else 120,
+            "epochs": 3000 if args.dataset == "thumos14" else 120,
             "lr": 1.0e-4,
             "validation_term": 100 if args.dataset == "thumos14" else 10,
             "ckpt_save_term": 50 if args.dataset == "thumos14" else 5,
