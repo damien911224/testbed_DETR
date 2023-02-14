@@ -458,6 +458,8 @@ def train(config):
                         else:
                             validation_losses[loss_name] += loss_value.item()
                     valid_num += len(identities)
+
+                    frame_lengths = frame_lengths.numpy()
                     for n_i in range(len(identities)):
                         identity = identities[n_i]
                         frame_length = frame_lengths[n_i]
