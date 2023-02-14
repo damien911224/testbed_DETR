@@ -243,7 +243,7 @@ class Datasets():
                                      identity,
                                      random_crop_index,
                                      random_flip_index))
-            kinetics_features = np.load(feature_path)
+            kinetics_features = np.load(feature_path, mmap_mode="r")
             feature_length = len(kinetics_features)
 
             scaled_segments = np.asarray(shuffled_segments, dtype=np.float32)
@@ -359,7 +359,7 @@ class Datasets():
                                              source_identity,
                                              random_crop_index,
                                              random_flip_index))
-                    source_kinetics_features = np.load(feature_path)
+                    source_kinetics_features = np.load(feature_path, mmap_mode="r")
 
                     source_segments = list()
                     for segment_index in range(len(source_segment_strings) // 3):
