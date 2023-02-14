@@ -1,0 +1,2 @@
+Non_boundary 0
+Boundary 1
