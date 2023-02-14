@@ -241,10 +241,10 @@ def train(config):
 
                             start_indices = loop_index * testing_step + p_s * (feature_width - 1)
                             start_indices = np.clip(start_indices, 0, feature_length - 1)
-                            start_indices = (start_indices / (feature_width - 1)) * (frame_length - 1) + 1
+                            start_indices = (start_indices / (feature_length - 1)) * (frame_length - 1) + 1
                             end_indices = loop_index * testing_step + p_e * (feature_width - 1)
                             end_indices = np.clip(end_indices, 0, feature_length - 1)
-                            end_indices = (end_indices / (feature_width - 1)) * (frame_length - 1) + 1
+                            end_indices = (end_indices / (feature_length - 1)) * (frame_length - 1) + 1
 
                             valid_flags = end_indices - start_indices + 1 >= config.feature_frame_step_size
 
