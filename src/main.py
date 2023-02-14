@@ -443,9 +443,9 @@ def train(config):
                         target_dict.append(batch_dict)
 
                     predictions = model(features)
-                    pred_boxes = segment_ops.segment_cw_to_t1t2(predictions["pred_boxes"])
-                    pred_boxes = pred_boxes.detach().cpu().numpy()
                     pred_logits = predictions["pred_logits"].sigmoid().detach().cpu().numpy()
+                    pred_segments = segment_ops.segment_cw_to_t1t2(predictions["pred_segments"])
+                    pred_segments = pred_boxes.detach().cpu().numpy()
                     loss_dict = criterion(predictions, target_dict)
 
                     weight_dict = criterion.weight_dict
@@ -463,11 +463,11 @@ def train(config):
                         frame_length = frame_lengths[n_i]
                         cuhk_classification_scores = np.array(all_anet2017_cuhk["results"][identity])
 
-                        this_pred_boxes = pred_boxes[n_i]
                         this_pred_logits = pred_logits[n_i]
+                        this_pred_segments = pred_segments[n_i]
 
-                        p_s = this_pred_boxes[..., 0]
-                        p_e = this_pred_boxes[..., 1]
+                        p_s = this_pred_segments[..., 0]
+                        p_e = this_pred_segments[..., 1]
                         scores = np.max(this_pred_logits, axis=-1)
 
                         valid_flags = p_e >= p_s
