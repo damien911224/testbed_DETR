@@ -30,7 +30,7 @@ def train(config):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-    model_name = "{}_{}".format(config.model_name, config.input_type)
+    model_name = config.model_name
     now = time.localtime()
     train_date = "{:02d}{:02d}".format(now.tm_mon, now.tm_mday)
 
