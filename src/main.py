@@ -188,7 +188,7 @@ def train(config):
                         feature_path = os.path.join(datasets.features_folder,
                                                     identity, "{}_features.npy".format(identity))
                         features = np.load(feature_path)
-                        # feature_length = len(features)
+                        feature_length = len(features)
 
                         feature_width = config.feature_width
                         testing_step = config.testing_step
@@ -243,10 +243,12 @@ def train(config):
                             class_indices = np.argmax(this_pred_logits, axis=-1)
                             class_indices += 1
 
-                            start_indices = np.round(p_s * frame_length)
-                            start_indices = np.clip(start_indices, 1, frame_length)
-                            end_indices = np.round(p_e * frame_length)
-                            end_indices = np.clip(end_indices, 1, frame_length)
+                            start_indices = loop_index * testing_step + p_s * (feature_width - 1)
+                            start_indices = np.clip(start_indices, 0, feature_length - 1)
+                            start_indices = (start_indices / (feature_width - 1)) * (frame_length - 1) + 1
+                            end_indices = loop_index * testing_step + p_e * (feature_width - 1)
+                            end_indices = np.clip(end_indices, 0, feature_length - 1)
+                            end_indices = (end_indices / (feature_width - 1)) * (frame_length - 1) + 1
 
                             valid_flags = end_indices - start_indices + 1 >= config.feature_frame_step_size
 
