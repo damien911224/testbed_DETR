@@ -272,8 +272,6 @@ def train(config):
                                            "end_index": all_end_indices,
                                            "score": all_scores})
 
-                    video_prediction_slices = video_prediction_slices.groupby("class_index")
-
                     if not config.use_soft_nms:
                         if config.use_classification:
                             nmsed_detection_slices = list()
