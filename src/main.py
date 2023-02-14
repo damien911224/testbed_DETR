@@ -659,7 +659,7 @@ if __name__ == "__main__":
             "display_term": 1,
             "batch_size": 16 // args.num_gpus if args.dataset == "thumos14" else 16 // args.num_gpus,
             "num_workers": 0,
-            "prefetch_factor": 0,
+            "prefetch_factor": 2,
             "weight_decay": 1.0e-4,
             "clip_norm": 0.1,
 
