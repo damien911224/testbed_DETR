@@ -645,10 +645,12 @@ class Datasets():
 
             W, C = action_targets.shape
 
+            target_slices = np.asarray(target_slices, dtype=np.float32)
+            target_slices[:, :2] = target_slices[:, :2] / (self.datasets.config.feature_width - 1)
+            target_slices[:, :2] = np.clip(target_slices[:, :2], 0.0, 1.0)
             detection_targets = np.zeros(dtype=np.float32, shape=(W, 4))
             if len(target_slices):
                 foreground_segments = target_slices
-                foreground_segments[:, :-1] = foreground_segments[:, :-1] / (W - 1)
                 detection_targets[:len(foreground_segments), 0] = 1.0
                 detection_targets[:len(foreground_segments), 1] = foreground_segments[:, -1] - 1
                 detection_targets[:len(foreground_segments), 2:] = \
