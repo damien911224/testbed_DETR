@@ -144,7 +144,7 @@ class Datasets():
             batch_size = self.datasets.config.batch_size * self.datasets.config.num_gpus
             self.dataloader = DataLoader(self, batch_size=batch_size, shuffle=True,
                                          num_workers=self.datasets.config.num_workers, drop_last=True,
-                                         pin_memory=True, prefetch_factor=10)
+                                         pin_memory=True, prefetch_factor=5)
 
         def __len__(self):
             return len(self.tf_data)
@@ -503,7 +503,7 @@ class Datasets():
             batch_size = self.datasets.config.batch_size * self.datasets.config.num_gpus
             self.dataloader = DataLoader(self, batch_size=batch_size, shuffle=False,
                                          num_workers=self.datasets.config.num_workers, drop_last=False,
-                                         pin_memory=True, prefetch_factor=10)
+                                         pin_memory=True, prefetch_factor=5)
 
         def __len__(self):
             return len(self.tf_data)
