@@ -187,7 +187,7 @@ def train(config):
                     feature_path = os.path.join(datasets.features_folder,
                                                 identity, "{}_features.npy".format(identity))
                     features = np.load(feature_path)
-                    feature_length = len(features)
+                    # feature_length = len(features)
 
                     feature_width = config.feature_width
                     testing_step = config.testing_step
