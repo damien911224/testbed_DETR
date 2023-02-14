@@ -632,16 +632,14 @@ class Datasets():
 
             W, C = action_targets.shape
 
-            detection_targets = np.zeros(dtype=np.float32, shape=(W, 6))
+            detection_targets = np.zeros(dtype=np.float32, shape=(W, 4))
             if len(target_slices):
                 foreground_segments = target_slices
                 foreground_segments[:, :-1] = foreground_segments[:, :-1] / (W - 1)
                 detection_targets[:len(foreground_segments), 0] = 1.0
                 detection_targets[:len(foreground_segments), 1] = foreground_segments[:, -1] - 1
                 detection_targets[:len(foreground_segments), 2:] = \
-                    np.stack((foreground_segments[:, 0],
-                              foreground_segments[:, 1],
-                              (foreground_segments[:, 0] + foreground_segments[:, 1]) / 2,
+                    np.stack(((foreground_segments[:, 0] + foreground_segments[:, 1]) / 2,
                               (foreground_segments[:, 1] - foreground_segments[:, 0])), axis=-1)
 
             features = torch.from_numpy(features).permute(1, 0)
