@@ -490,6 +490,13 @@ class Datasets():
                     with open(json_file_path, "w") as fp:
                         json.dump(tf_data, fp, indent=4, sort_keys=True)
 
+            self.frame_lengths = dict()
+            for datum in tf_data:
+                splits = datum.split()
+                identity = splits[0]
+                frame_length = int(splits[1])
+                self.frame_lengths[identity] = frame_length
+
             self.tf_data = tf_data
             self.data_count = len(self.tf_data)
             print("Making Tensorflow Validation Dataset Object ... {} Instances".format(len(tf_data)))
