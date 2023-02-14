@@ -658,7 +658,7 @@ if __name__ == "__main__":
             "ckpt_save_term": 50 if args.dataset == "thumos14" else 5,
             "display_term": 1,
             "batch_size": 16 // args.num_gpus if args.dataset == "thumos14" else 16 // args.num_gpus,
-            "num_workers": 24,
+            "num_workers": 48,
             "weight_decay": 1.0e-4,
             "clip_norm": 0.1,
 
