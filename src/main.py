@@ -95,6 +95,7 @@ def train(config):
             iteration_start_time = time.time()
             preprocessing_start_time = time.time()
 
+            features = features.cuda()
             target_dict = list()
             for b_i in range(len(targets)):
                 batch_dict = dict()
@@ -112,7 +113,7 @@ def train(config):
 
             epoch_preprocessing_time += time.time() - preprocessing_start_time
             train_step_start_time = time.time()
-            outputs, _ = model(features)
+            outputs = model(features)
             loss_dict = criterion(outputs, target_dict)
             weight_dict = criterion.weight_dict
             losses = sum(loss_dict[k] * weight_dict[k] for k in loss_dict.keys() if k in weight_dict)
