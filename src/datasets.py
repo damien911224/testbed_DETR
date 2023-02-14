@@ -425,7 +425,7 @@ class Datasets():
 
             W, C = action_targets.shape
 
-            detection_targets = np.zeros(dtype=np.float32, shape=(W, 6))
+            detection_targets = np.zeros(dtype=np.float32, shape=(W, 4))
             if len(target_slices):
                 foreground_segments = target_slices
                 foreground_segments[:, :-1] = foreground_segments[:, :-1] / (W - 1)
