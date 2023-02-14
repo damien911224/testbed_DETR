@@ -445,7 +445,7 @@ def train(config):
                     predictions = model(features)
                     pred_logits = predictions["pred_logits"].sigmoid().detach().cpu().numpy()
                     pred_segments = segment_ops.segment_cw_to_t1t2(predictions["pred_segments"])
-                    pred_segments = pred_boxes.detach().cpu().numpy()
+                    pred_segments = pred_segments.detach().cpu().numpy()
                     loss_dict = criterion(predictions, target_dict)
 
                     weight_dict = criterion.weight_dict
