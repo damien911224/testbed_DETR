@@ -176,9 +176,7 @@ def train(config):
             if config.dataset == "thumos14":
                 validation_batch_index = 0
                 with open(datasets.target_path, "r") as json_fp:
-                    first_ground_truth_json = json.loads(json_fp.read())
-                ground_truth_json = dict(first_ground_truth_json)
-                ground_truth_json["database"] = dict()
+                    ground_truth_json = json.loads(json_fp.read())
                 detection_prediction_json = dict({"version": "VERSION 1.3", "results": {},
                                                   "external_data":
                                                       {"used": True,
