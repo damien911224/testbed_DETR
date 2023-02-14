@@ -243,7 +243,7 @@ class Datasets():
                                      identity,
                                      random_crop_index,
                                      random_flip_index))
-            kinetics_features = np.load(feature_path, mmap_mode="r")
+            kinetics_features = np.load(feature_path)
             feature_length = len(kinetics_features)
 
             scaled_segments = np.asarray(shuffled_segments, dtype=np.float32)
@@ -328,10 +328,11 @@ class Datasets():
 
             features = np.array(features, dtype=np.float32)
 
-            if self.datasets.config.dataset == "thumos14":
-                copy_paste = False
-            else:
-                copy_paste = random.choice([True, False])
+            # if self.datasets.config.dataset == "thumos14":
+            #     copy_paste = False
+            # else:
+            #     copy_paste = random.choice([True, False])
+            copy_paste = False
             if copy_paste:
                 while True:
                     source_splits = random.choice(self.tf_data).split(" ")
@@ -359,7 +360,7 @@ class Datasets():
                                              source_identity,
                                              random_crop_index,
                                              random_flip_index))
-                    source_kinetics_features = np.load(feature_path, mmap_mode="r")
+                    source_kinetics_features = np.load(feature_path)
 
                     source_segments = list()
                     for segment_index in range(len(source_segment_strings) // 3):
@@ -582,8 +583,7 @@ class Datasets():
                 entire_targets[start_index - 1:end_index - 1 + 1] = target
 
             kinetics_features = np.load(os.path.join(self.datasets.features_folder,
-                                                     identity,
-                                                     "{}_features.npy".format(identity)), mmap_mode="r")
+                                                     identity, "{}_features.npy".format(identity)))
 
             feature_length = len(kinetics_features)
 
