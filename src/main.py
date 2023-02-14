@@ -56,7 +56,7 @@ def train(config):
     else:
         boundaries = [80, 100]
 
-    optimizer = torch.optim.AdamW(model.parameters(), lr=config.lr)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=config.lr, weight_decay=config.weight_decay)
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, boundaries, gamma=0.1)
 
     model = model.cuda()
@@ -100,7 +100,7 @@ def train(config):
                 batch_dict = dict()
                 batch_dict["labels"] = list()
                 batch_dict["boxes"] = list()
-                for t_i, t in enumerate(targets[-1][b_i]):
+                for t_i, t in enumerate(targets[b_i]):
                     if t[0] <= 0.0:
                         break
                     batch_dict["labels"].append(t[1])
@@ -509,11 +509,11 @@ def train(config):
                 for features, targets, identities, frame_lengths in validation_data.dataloader:
                     features = features.cuda()
                     target_dict = list()
-                    for b_i in range(len(targets[-1])):
+                    for b_i in range(len(targets)):
                         batch_dict = dict()
                         batch_dict["labels"] = list()
                         batch_dict["boxes"] = list()
-                        for t_i, t in enumerate(targets[-1][b_i]):
+                        for t_i, t in enumerate(targets[b_i]):
                             if t[0] <= 0.0:
                                 break
                             batch_dict["labels"].append(t[1])
