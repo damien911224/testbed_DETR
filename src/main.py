@@ -207,7 +207,7 @@ def train(config):
                                                         (config.feature_width - len(this_features), 1))],
                                                axis=0)
 
-                        this_features = torch.from_numpy(this_features).cuda()
+                        this_features = torch.from_numpy(this_features).transpose(0, 1).cuda()
 
                         predictions = model(this_features.unsqueeze(0))
                         pred_logits = predictions["pred_logits"].squeeze(0).sigmoid().detach().cpu().numpy()
