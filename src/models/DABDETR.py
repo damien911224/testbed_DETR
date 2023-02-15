@@ -208,6 +208,9 @@ class DABDETR(nn.Module):
         # out = {'pred_logits': outputs_class[-1], 'pred_segments': outputs_coord[-1],
         #        'Q_weights': normalized_Q_weights, 'K_weights': normalized_K_weights, 'C_weights': C_weights[-1]}
 
+        print(len(outputs_class))
+        exit()
+
         if self.with_act_reg:
             # perform RoIAlign
             B, N = outputs_coord[-1].shape[:2]
