@@ -453,7 +453,7 @@ def train(config):
                                 tgt_QQ = torch.sqrt(torch.matmul(QK, QK.transpose(0, 1)))
                                 tgt_QQ = (tgt_QQ / torch.sum(tgt_QQ, dim=-1, keepdim=True)).numpy()
 
-                                src_KK = predictions["K_weights"][n_i].detach().cpu().numpy()
+                                src_KK = predictions["K_weights"][:, n_i].detach().cpu().numpy()
                                 src_KK_mean = np.mean(src_KK, axis=0)
 
                                 L, H, W = src_KK.shape
@@ -489,7 +489,7 @@ def train(config):
                                 plt.close(fig)
                                 KK_images.append(vis_array)
 
-                                src_QQ = predictions["Q_weights"][n_i].detach().cpu().numpy()
+                                src_QQ = predictions["Q_weights"][:, n_i].detach().cpu().numpy()
                                 src_QQ_mean = np.mean(src_QQ, axis=0)
 
                                 L, H, W = src_QQ.shape
