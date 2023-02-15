@@ -554,12 +554,20 @@ def train(config):
                                 tgt_QQ = torch.sqrt(torch.matmul(QK, QK.transpose(0, 1)))
                                 tgt_QQ = (tgt_QQ / torch.sum(tgt_QQ, dim=-1, keepdim=True)).numpy()
 
+                                this_targets = target_dict[n_i]["segments"]
+
                                 src_KK = predictions["K_weights"][:, n_i].detach().cpu().numpy()
                                 src_KK_mean = np.mean(src_KK, axis=0)
 
                                 L, H, W = src_KK.shape
+                                KK_box = np.zeros(dtype=np.float32, shape=(H, ))
+                                for box in this_targets:
+                                    s_i = round((box[0] - box[1] / 2) * (H - 1))
+                                    e_i = round((box[0] + box[1] / 2) * (H - 1))
+                                    KK_box[s_i:e_i + 1] = 1.0
                                 snes, plot_axis, num_plots = list(), 0, L + 2 + 1
-                                labels = ["{}".format(x) for x in range(1, H + 1, 1)]
+                                H_labels = ["{}".format(x) for x in range(1, H + 1, 1)] + ["GT"] * H // 40
+                                W_labels = ["{}".format(x) for x in range(1, H + 1, 1)]
                                 fig, axs = plt.subplots(1, num_plots,
                                                         figsize=(10 * num_plots, 10),
                                                         gridspec_kw={'width_ratios': [1] * (num_plots - 1) + [0.08]})
@@ -568,7 +576,8 @@ def train(config):
                                 for map, title in zip(maps, titles):
                                     map -= np.min(map)
                                     map /= np.max(map)
-                                    df = pd.DataFrame(map, labels, labels)
+                                    map = np.concatenate((map, KK_box[None].repeat(H // 40, 1)), axis=0)
+                                    df = pd.DataFrame(map, H_labels, W_labels)
                                     this_sn = sn.heatmap(df, cmap="YlGnBu", cbar=plot_axis >= num_plots - 1,
                                                          ax=axs[plot_axis], cbar_ax=axs[-1])
                                     this_sn.set_xlabel("")
@@ -592,8 +601,14 @@ def train(config):
                                 src_QQ_mean = np.mean(src_QQ, axis=0)
 
                                 L, H, W = src_QQ.shape
+                                QQ_box = np.zeros(dtype=np.float32, shape=(H, ))
+                                for box in this_targets:
+                                    s_i = round((box[0] - box[1] / 2) * (H - 1))
+                                    e_i = round((box[0] + box[1] / 2) * (H - 1))
+                                    QQ_box[s_i:e_i + 1] = 1.0
                                 snes, plot_axis, num_plots = list(), 0, L + 2 + 1
-                                labels = ["{}".format(x) for x in range(1, H + 1, 1)]
+                                H_labels = ["{}".format(x) for x in range(1, H + 1, 1)] + ["GT"] * H // 40
+                                W_labels = ["{}".format(x) for x in range(1, H + 1, 1)]
                                 fig, axs = plt.subplots(1, num_plots,
                                                         figsize=(10 * num_plots, 10),
                                                         gridspec_kw={'width_ratios': [1] * (num_plots - 1) + [0.08]})
@@ -602,7 +617,8 @@ def train(config):
                                 for map, title in zip(maps, titles):
                                     map -= np.min(map)
                                     map /= np.max(map)
-                                    df = pd.DataFrame(map, labels, labels)
+                                    map = np.concatenate((map, QQ_box[None].repeat(H // 40, 1)), axis=0)
+                                    df = pd.DataFrame(map, H_labels, W_labels)
                                     this_sn = sn.heatmap(df, cmap="YlGnBu", cbar=plot_axis >= num_plots - 1,
                                                          ax=axs[plot_axis], cbar_ax=axs[num_plots - 1])
                                     this_sn.set_xlabel("")
@@ -751,7 +767,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
 
     argparser.add_argument("--num_gpus", type=int, default=1)
-    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][1])
+    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][0])
     argparser.add_argument("--postfix", type=str, default=None)
 
     args = argparser.parse_args()
@@ -803,12 +819,12 @@ if __name__ == "__main__":
             "model_name": "SelfDETR",
             "position_embedding": "sine",
             "hidden_dim": 256,
-            "num_queries": 100, # 40
+            "num_queries": 200, # 40
             "dropout": 0.1,
             "nheads": 8,
             "dim_feedforward": 2048,  # 1024
-            "enc_layers": 6, # 2
-            "dec_layers": 6, # 4
+            "enc_layers": 2, # 2
+            "dec_layers": 4, # 4
             "aux_loss": True,
             "seg_refine": True,
             "use_classification": True,
