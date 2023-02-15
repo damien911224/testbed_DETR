@@ -630,13 +630,6 @@ def train(config):
 
                         validation_batch_index += 1
 
-                        for k_i in range(len(KK_images)):
-                            this_image = KK_images[k_i]
-                            validation_summary_writer.add_image("KK_{:02d}".format(k_i + 1), this_image, epoch)
-                        for q_i in range(len(QQ_images)):
-                            this_image = QQ_images[q_i]
-                            validation_summary_writer.add_image("QQ_{:02d}".format(q_i + 1), this_image, epoch)
-
                     print()
 
                     for k_i in range(len(KK_images)):
