@@ -821,7 +821,7 @@ if __name__ == "__main__":
             "act_loss_coef": 4,
             "KK_loss_coef": 5,
             "QQ_loss_coef": 5,
-            "set_cost_class": 2, # 2
+            "set_cost_class": 6, # 6
             "set_cost_seg": 5,
             "set_cost_iou": 2,
             "focal_alpha": 0.25,
