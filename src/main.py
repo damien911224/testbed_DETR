@@ -447,13 +447,13 @@ def train(config):
 
                         if validation_batch_index < 1:
                             for n_i in range(len(identities)):
-                                QK = predictions[n_i]["C_weights"].detach().cpu()
+                                QK = predictions["C_weights"][n_i].detach().cpu()
                                 tgt_KK = torch.sqrt(torch.bmm(QK.transpose(1, 2), QK))
                                 tgt_KK = (tgt_KK / torch.sum(tgt_KK, dim=-1, keepdim=True)).numpy()
                                 tgt_QQ = torch.sqrt(torch.bmm(QK, QK.transpose(1, 2)))
                                 tgt_QQ = (tgt_QQ / torch.sum(tgt_QQ, dim=-1, keepdim=True)).numpy()
 
-                                src_KK = predictions[n_i]["K_weights"].detach().cpu().numpy()
+                                src_KK = predictions["K_weights"][n_i].detach().cpu().numpy()
                                 src_KK_mean = np.mean(src_KK, axis=0)
 
                                 L, H, W = src_KK.shape
@@ -487,7 +487,7 @@ def train(config):
                                 plt.close(fig)
                                 KK_images.append(vis_array)
 
-                                src_QQ = predictions[n_i]["Q_weights"].detach().cpu().numpy()
+                                src_QQ = predictions["Q_weights"][n_i].detach().cpu().numpy()
                                 src_QQ_mean = np.mean(src_QQ, axis=0)
 
                                 L, H, W = src_QQ.shape
