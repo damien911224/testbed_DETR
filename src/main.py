@@ -457,6 +457,7 @@ def train(config):
                                 src_KK_mean = np.mean(src_KK, axis=0)
 
                                 L, H, W = src_KK.shape
+                                print(L, H, W)
                                 snes, plot_axis, num_plots = list(), 0, L + 2
                                 labels = ["{}".format(x + 1) for x in range(1, H + 1, 1)]
                                 fig, axs = plt.subplots(1, num_plots,
