@@ -12,9 +12,11 @@ import argparse
 import torch
 import matplotlib
 import seaborn as sn
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from tensorboardX import SummaryWriter
+
 np.seterr(all="ignore")
 from shutil import rmtree
 from evaluation.eval_detection import ANETdetection
@@ -686,6 +688,7 @@ def train(config):
     train_summary_writer.close()
     validation_summary_writer.close()
 
+
 def nms(proposals, threshold=0.65):
     proposals = np.copy(sorted(proposals, key=lambda x: x[-1]))
 
@@ -744,7 +747,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
 
     argparser.add_argument("--num_gpus", type=int, default=1)
-    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][1])
+    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][0])
     argparser.add_argument("--postfix", type=str, default=None)
 
     args = argparser.parse_args()
@@ -777,7 +780,7 @@ if __name__ == "__main__":
             "max_seg_num": 100,
             "min_score": 0.001,
             "nms_sigma": 0.75,
-            "voting_thresh": 0.9, # [0.75, 0.90]
+            "voting_thresh": 0.9,  # [0.75, 0.90]
             "iou_threshold": 0.1,
 
             # dataset
@@ -796,12 +799,12 @@ if __name__ == "__main__":
             "model_name": "SelfDETR",
             "position_embedding": "sine",
             "hidden_dim": 256,
-            "num_queries": 40, # 40
+            "num_queries": 40,  # 40
             "dropout": 0.1,
             "nheads": 8,
-            "dim_feedforward": 1024, # 1024
-            "enc_layers": 2, # 2
-            "dec_layers": 4, # 4
+            "dim_feedforward": 2048,  # 1024
+            "enc_layers": 2,  # 2
+            "dec_layers": 4,  # 4
             "aux_loss": True,
             "seg_refine": True,
             "use_classification": True,
@@ -814,7 +817,7 @@ if __name__ == "__main__":
             "act_loss_coef": 4,
             "KK_loss_coef": 5,
             "QQ_loss_coef": 5,
-            "set_cost_class": 6, # 6
+            "set_cost_class": 6,  # 6
             "set_cost_seg": 5,
             "set_cost_iou": 2,
             "focal_alpha": 0.25,
