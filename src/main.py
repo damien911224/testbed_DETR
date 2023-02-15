@@ -555,7 +555,7 @@ def train(config):
                                 snes, plot_axis, num_plots = list(), 0, L + 2 + 1
                                 labels = ["{}".format(x + 1) for x in range(1, H + 1, 1)]
                                 fig, axs = plt.subplots(1, num_plots,
-                                                        figsize=(10 * num_plots, 20),
+                                                        figsize=(10 * num_plots, 10),
                                                         gridspec_kw={'width_ratios': [1] * (num_plots - 1) + [0.08]})
                                 maps = [tgt_KK, src_KK_mean] + [src_KK[l_i] for l_i in range(L)]
                                 titles = ["Tgt", "Src Mean"] + ["Src_L{:02d}".format(l_i + 1) for l_i in range(L)]
