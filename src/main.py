@@ -484,6 +484,7 @@ def train(config):
 
                                 fig.canvas.draw()
                                 vis_array = np.array(fig.canvas.renderer._renderer)
+                                print(vis_array.shape)
                                 plt.close(fig)
                                 KK_images.append(vis_array)
 
@@ -518,6 +519,7 @@ def train(config):
 
                                 fig.canvas.draw()
                                 vis_array = np.array(fig.canvas.renderer._renderer)
+                                print(vis_array.shape)
                                 plt.close(fig)
                                 QQ_images.append(vis_array)
 
