@@ -230,13 +230,14 @@ class DABDETR(nn.Module):
         return out
 
     @torch.jit.unused
-    def _set_aux_loss(self, outputs_class, outputs_coord, Q_weights, K_weights, C_weights):
+    def _set_aux_loss(self, outputs_class, outputs_coord):
         # this is a workaround to make torchscript happy, as torchscript
         # doesn't support dictionary with non-homogeneous values, such
         # as a dict having both a Tensor and a list.
-        return [{'pred_logits': a, 'pred_segments': b, 'Q_weights': c, 'K_weights': d, 'C_weights': e}
-                for a, b, c, d, e in zip(outputs_class[:-1], outputs_coord[:-1],
-                                         Q_weights[:-1], K_weights[:-1], C_weights[:-1])]
+        return [{'pred_logits': a, 'pred_segments': b} for a, b in zip(outputs_class[:-1], outputs_coord[:-1])]
+        # return [{'pred_logits': a, 'pred_segments': b, 'Q_weights': c, 'K_weights': d, 'C_weights': e}
+        #         for a, b, c, d, e in zip(outputs_class[:-1], outputs_coord[:-1],
+        #                                  Q_weights[:-1], K_weights[:-1], C_weights[:-1])]
         # return [{'pred_logits': a, 'pred_segments': b, 'Q_weights': c, 'K_weights': d, 'C_weights': e}
         #         for a, b, c, d, e in zip(outputs_class[:-1], outputs_coord[:-1], Q_weights[:-1], K_weights[:-1],
         #                                  [C_weights[-1]] * len(outputs_class[:-1]))]
