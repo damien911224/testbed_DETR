@@ -10,6 +10,10 @@ import gc
 import pandas as pd
 import argparse
 import torch
+import matplotlib
+import seaborn as sn
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 from tensorboardX import SummaryWriter
 np.seterr(all="ignore")
 from shutil import rmtree
@@ -392,6 +396,8 @@ def train(config):
                                                           {"used": True,
                                                            "details": "CNN is pre-trained on Kinetics-400"}})
 
+                    KK_images = list()
+                    QQ_images = list()
                     for features, targets, identities, frame_lengths in validation_data.dataloader:
                         features = features.cuda()
                         target_dict = list()
@@ -521,6 +527,82 @@ def train(config):
                                     detection_prediction_json["results"][identity].append(
                                         {"label": "Diving", "score": score, "segment": time_intervals})
 
+                        if validation_batch_index < 1:
+                            for n_i in range(len(identities)):
+                                QK = predictions[n_i]["C_weights"].detach().cpu()
+                                tgt_KK = torch.sqrt(torch.bmm(QK.transpose(1, 2), QK))
+                                tgt_KK = (tgt_KK / torch.sum(tgt_KK, dim=-1, keepdim=True)).numpy()
+                                tgt_QQ = torch.sqrt(torch.bmm(QK, QK.transpose(1, 2)))
+                                tgt_QQ = (tgt_QQ / torch.sum(tgt_QQ, dim=-1, keepdim=True)).numpy()
+
+                                src_KK = predictions[n_i]["K_weights"].detach().cpu().numpy()
+                                src_KK_mean = np.mean(src_KK, axis=0)
+
+                                L, H, W = src_KK.shape
+                                snes, plot_axis, num_plots = list(), 0, L + 2
+                                labels = ["{}".format(x + 1) for x in range(1, H + 1, 1)]
+                                fig, axs = plt.subplots(1, num_plots,
+                                                        figsize=(10 * num_plots, 20),
+                                                        gridspec_kw={'width_ratios': [1] * (num_plots - 1) + [0.08]})
+                                maps = [tgt_KK, src_KK_mean] + [src_KK[l_i] for l_i in range(L)]
+                                titles = ["Tgt", "Src Mean"] + ["Src_L{:02d}".format(l_i + 1) for l_i in range(L)]
+                                for map, title in zip(maps, titles):
+                                    map -= np.min(map)
+                                    map /= np.max(map)
+                                    df = pd.DataFrame(map, labels, labels)
+                                    this_sn = sn.heatmap(df, cmap="YlGnBu", cbar=plot_axis >= num_plots - 1,
+                                                         ax=axs[plot_axis], cbar_ax=axs[num_plots - 1])
+                                    this_sn.set_xlabel("")
+                                    this_sn.set_ylabel("")
+                                    snes.append(this_sn)
+                                    axs[plot_axis].set_title(title)
+                                    plot_axis += 1
+
+                                for snx in snes:
+                                    tl = snx.get_xticklabels()
+                                    snx.set_xticklabels(tl, rotation=90)
+                                    tly = snx.get_yticklabels()
+                                    snx.set_yticklabels(tly, rotation=0)
+
+                                fig.canvas.draw()
+                                vis_array = np.array(fig.canvas.renderer._renderer)
+                                plt.close(fig)
+                                KK_images.append(vis_array)
+
+                                src_QQ = predictions[n_i]["Q_weights"].detach().cpu().numpy()
+                                src_QQ_mean = np.mean(src_QQ, axis=0)
+
+                                L, H, W = src_QQ.shape
+                                snes, plot_axis, num_plots = list(), 0, L + 2
+                                labels = ["{}".format(x + 1) for x in range(1, H + 1, 1)]
+                                fig, axs = plt.subplots(1, num_plots,
+                                                        figsize=(10 * num_plots, 20),
+                                                        gridspec_kw={'width_ratios': [1] * (num_plots - 1) + [0.08]})
+                                maps = [tgt_QQ, src_QQ_mean] + [src_QQ[l_i] for l_i in range(L)]
+                                titles = ["Tgt", "Src Mean"] + ["Src_L{:02d}".format(l_i + 1) for l_i in range(L)]
+                                for map, title in zip(maps, titles):
+                                    map -= np.min(map)
+                                    map /= np.max(map)
+                                    df = pd.DataFrame(map, labels, labels)
+                                    this_sn = sn.heatmap(df, cmap="YlGnBu", cbar=plot_axis >= num_plots - 1,
+                                                         ax=axs[plot_axis], cbar_ax=axs[num_plots - 1])
+                                    this_sn.set_xlabel("")
+                                    this_sn.set_ylabel("")
+                                    snes.append(this_sn)
+                                    axs[plot_axis].set_title(title)
+                                    plot_axis += 1
+
+                                for snx in snes:
+                                    tl = snx.get_xticklabels()
+                                    snx.set_xticklabels(tl, rotation=90)
+                                    tly = snx.get_yticklabels()
+                                    snx.set_yticklabels(tly, rotation=0)
+
+                                fig.canvas.draw()
+                                vis_array = np.array(fig.canvas.renderer._renderer)
+                                plt.close(fig)
+                                QQ_images.append(vis_array)
+
                         print_string = \
                             "|{:10s}|Epoch {:3d}/{:3d}|Batch {:3d}/{:3d}|Loss: {:.2f}".format(
                                 "Validation", epoch, config.epochs, validation_batch_index + 1, loop_rounds, loss)
@@ -536,6 +618,13 @@ def train(config):
                         validation_batch_index += 1
 
                     print()
+
+                    for k_i in range(len(KK_images)):
+                        this_image = KK_images[k_i]
+                        validation_summary_writer.add_image("KK_{:02d}".format(k_i + 1), this_image, epoch)
+                    for q_i in range(len(QQ_images)):
+                        this_image = QQ_images[q_i]
+                        validation_summary_writer.add_image("QQ_{:02d}".format(q_i + 1), this_image, epoch)
 
                     if config.dataset == "activitynet":
                         try:

@@ -197,8 +197,11 @@ class DABDETR(nn.Module):
 
         # out = {'pred_logits': outputs_class[-1], 'pred_segments': outputs_coord[-1],
         #        'Q_weights': Q_weights[-1], 'K_weights': K_weights[-1], 'C_weights': C_weights[-1]}
+        # out = {'pred_logits': outputs_class[-1], 'pred_segments': outputs_coord[-1],
+        #        'Q_weights': torch.mean(Q_weights, dim=0), 'K_weights': torch.mean(K_weights, dim=0),
+        #        'C_weights': C_weights[-1]}
         out = {'pred_logits': outputs_class[-1], 'pred_segments': outputs_coord[-1],
-               'Q_weights': torch.mean(Q_weights, dim=0), 'K_weights': torch.mean(K_weights, dim=0),
+               'Q_weights': Q_weights, 'K_weights': torch.mean(K_weights, dim=0),
                'C_weights': C_weights[-1]}
         # out = {'pred_logits': outputs_class[-1], 'pred_segments': outputs_coord[-1],
         #        'Q_weights': torch.mean(Q_weights, dim=0), 'K_weights': torch.mean(K_weights, dim=0),
@@ -355,7 +358,7 @@ class SetCriterion(nn.Module):
         assert 'Q_weights' in outputs
         assert 'C_weights' in outputs
 
-        Q_weights = outputs["Q_weights"]
+        Q_weights = torch.mean(outputs["Q_weights"], dim=0)
         C_weights = outputs["C_weights"].detach()
 
         N, Q, K = C_weights.shape
@@ -416,7 +419,7 @@ class SetCriterion(nn.Module):
         assert 'K_weights' in outputs
         assert 'C_weights' in outputs
 
-        K_weights = outputs["K_weights"]
+        K_weights = torch.mean(outputs["K_weights"], dim=0)
         C_weights = outputs["C_weights"].detach()
 
         N, Q, K = C_weights.shape
