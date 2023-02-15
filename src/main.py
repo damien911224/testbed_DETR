@@ -457,7 +457,7 @@ def train(config):
                                 src_KK_mean = np.mean(src_KK, axis=0)
 
                                 L, H, W = src_KK.shape
-                                snes, plot_axis, num_plots = list(), 0, L + 2
+                                snes, plot_axis, num_plots = list(), 0, L + 2 + 1
                                 labels = ["{}".format(x + 1) for x in range(1, H + 1, 1)]
                                 fig, axs = plt.subplots(1, num_plots,
                                                         figsize=(10 * num_plots, 20),
@@ -475,7 +475,6 @@ def train(config):
                                     snes.append(this_sn)
                                     axs[plot_axis].set_title(title)
                                     plot_axis += 1
-                                    print(plot_axis)
 
                                 for snx in snes:
                                     tl = snx.get_xticklabels()
@@ -493,7 +492,7 @@ def train(config):
                                 src_QQ_mean = np.mean(src_QQ, axis=0)
 
                                 L, H, W = src_QQ.shape
-                                snes, plot_axis, num_plots = list(), 0, L + 2
+                                snes, plot_axis, num_plots = list(), 0, L + 2 + 1
                                 labels = ["{}".format(x + 1) for x in range(1, H + 1, 1)]
                                 fig, axs = plt.subplots(1, num_plots,
                                                         figsize=(10 * num_plots, 20),
