@@ -457,7 +457,6 @@ def train(config):
                                 src_KK_mean = np.mean(src_KK, axis=0)
 
                                 L, H, W = src_KK.shape
-                                print(L, H, W)
                                 snes, plot_axis, num_plots = list(), 0, L + 2
                                 labels = ["{}".format(x + 1) for x in range(1, H + 1, 1)]
                                 fig, axs = plt.subplots(1, num_plots,
@@ -470,12 +469,13 @@ def train(config):
                                     map /= np.max(map)
                                     df = pd.DataFrame(map, labels, labels)
                                     this_sn = sn.heatmap(df, cmap="YlGnBu", cbar=plot_axis >= num_plots - 1,
-                                                         ax=axs[plot_axis], cbar_ax=axs[num_plots - 1])
+                                                         ax=axs[plot_axis], cbar_ax=axs[-1])
                                     this_sn.set_xlabel("")
                                     this_sn.set_ylabel("")
                                     snes.append(this_sn)
                                     axs[plot_axis].set_title(title)
                                     plot_axis += 1
+                                    print(plot_axis)
 
                                 for snx in snes:
                                     tl = snx.get_xticklabels()
