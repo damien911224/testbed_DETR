@@ -117,8 +117,6 @@ def train(config):
             train_step_start_time = time.time()
             outputs = model(features)
             loss_dict = criterion(outputs, target_dict)
-            print(loss_dict)
-            exit()
             weight_dict = criterion.weight_dict
             losses = sum(loss_dict[k] * weight_dict[k] for k in loss_dict.keys() if k in weight_dict)
             optimizer.zero_grad()
