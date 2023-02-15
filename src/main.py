@@ -751,7 +751,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
 
     argparser.add_argument("--num_gpus", type=int, default=1)
-    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][0])
+    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][1])
     argparser.add_argument("--postfix", type=str, default=None)
 
     args = argparser.parse_args()
@@ -765,7 +765,7 @@ if __name__ == "__main__":
 
             # train
             "seed": 2023,
-            "epochs": 3000 if args.dataset == "thumos14" else 120,
+            "epochs": 3000 if args.dataset == "thumos14" else 500,
             "lr": 1.0e-4,
             "validation_term": 100 if args.dataset == "thumos14" else 10,
             "ckpt_save_term": 50 if args.dataset == "thumos14" else 5,
