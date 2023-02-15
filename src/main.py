@@ -688,12 +688,12 @@ if __name__ == "__main__":
             "model_name": "SelfDETR",
             "position_embedding": "sine",
             "hidden_dim": 256,
-            "num_queries": 40,
+            "num_queries": 300, # 40
             "dropout": 0.1,
             "nheads": 8,
-            "dim_feedforward": 2048,
-            "enc_layers": 2,
-            "dec_layers": 4,
+            "dim_feedforward": 2048, # 1024
+            "enc_layers": 6, # 2
+            "dec_layers": 6, # 4
             "aux_loss": True,
             "seg_refine": True,
             "use_classification": True,
@@ -706,7 +706,7 @@ if __name__ == "__main__":
             "act_loss_coef": 4,
             "KK_loss_coef": 5,
             "QQ_loss_coef": 5,
-            "set_cost_class": 6,
+            "set_cost_class": 2, # 2
             "set_cost_seg": 5,
             "set_cost_iou": 2,
             "focal_alpha": 0.25,
