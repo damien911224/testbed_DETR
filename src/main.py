@@ -235,8 +235,7 @@ def train(config):
                             this_pred_logits = all_pred_logits[loop_index]
                             this_pred_segments = all_pred_segments[loop_index]
 
-                            Q, C = this_pred_logits.shape
-
+                            # Q, C = this_pred_logits.shape
                             # # sort across different instances, pick top 100 at most
                             # topk_values, topk_indexes = torch.topk(this_pred_logits.flatten(), min(200, Q * C), dim=0)
                             # scores = topk_values.numpy()
