@@ -468,6 +468,7 @@ def train(config):
                                     map -= np.min(map)
                                     map /= np.max(map)
                                     df = pd.DataFrame(map, labels, labels)
+                                    print(map.shape)
                                     this_sn = sn.heatmap(df, cmap="YlGnBu", cbar=plot_axis >= num_plots - 1,
                                                          ax=axs[plot_axis], cbar_ax=axs[num_plots - 1])
                                     this_sn.set_xlabel("")
