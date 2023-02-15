@@ -547,7 +547,7 @@ def train(config):
                                         {"label": "Diving", "score": score, "segment": time_intervals})
 
                         if validation_batch_index < 1:
-                            for n_i in range(len(identities))[:1]:
+                            for n_i in range(len(identities))[:3]:
                                 QK = predictions["C_weights"][n_i].detach().cpu()
                                 tgt_KK = torch.sqrt(torch.matmul(QK.transpose(0, 1), QK))
                                 tgt_KK = (tgt_KK / torch.sum(tgt_KK, dim=-1, keepdim=True)).numpy()
@@ -559,7 +559,7 @@ def train(config):
 
                                 L, H, W = src_KK.shape
                                 snes, plot_axis, num_plots = list(), 0, L + 2 + 1
-                                labels = ["{}".format(x + 1) for x in range(1, H + 1, 1)]
+                                labels = ["{}".format(x) for x in range(1, H + 1, 1)]
                                 fig, axs = plt.subplots(1, num_plots,
                                                         figsize=(10 * num_plots, 10),
                                                         gridspec_kw={'width_ratios': [1] * (num_plots - 1) + [0.08]})
@@ -593,7 +593,7 @@ def train(config):
 
                                 L, H, W = src_QQ.shape
                                 snes, plot_axis, num_plots = list(), 0, L + 2 + 1
-                                labels = ["{}".format(x + 1) for x in range(1, H + 1, 1)]
+                                labels = ["{}".format(x) for x in range(1, H + 1, 1)]
                                 fig, axs = plt.subplots(1, num_plots,
                                                         figsize=(10 * num_plots, 10),
                                                         gridspec_kw={'width_ratios': [1] * (num_plots - 1) + [0.08]})
@@ -751,7 +751,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
 
     argparser.add_argument("--num_gpus", type=int, default=1)
-    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][0])
+    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][1])
     argparser.add_argument("--postfix", type=str, default=None)
 
     args = argparser.parse_args()

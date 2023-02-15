@@ -504,7 +504,7 @@ class Datasets():
             self.data_count = len(self.tf_data)
             print("Making Tensorflow Validation Dataset Object ... {} Instances".format(len(tf_data)))
             batch_size = self.datasets.config.batch_size * self.datasets.config.num_gpus
-            self.dataloader = DataLoader(self, batch_size=batch_size, shuffle=False,
+            self.dataloader = DataLoader(self, batch_size=batch_size, shuffle=True,
                                          num_workers=self.datasets.config.num_workers, drop_last=False,
                                          pin_memory=False, prefetch_factor=self.datasets.config.prefetch_factor)
 
