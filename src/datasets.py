@@ -260,7 +260,7 @@ class Datasets():
             target_segment = random.choice(scaled_segments.tolist())
             target_start_index = target_segment[0]
             target_end_index = target_segment[1]
-            target_length = target_end_index - target_start_index + 1
+            # target_length = target_end_index - target_start_index + 1
 
             # # pad features and targets to indicate the boundary of the video
             # scaled_feature_targets = np.array(scaled_feature_targets, dtype=np.float32)
@@ -284,8 +284,8 @@ class Datasets():
             #                     max(target_end_index - target_length // 4, target_start_index) + 1, 1)
             # start_range = range(target_start_index,
             #                     max(target_end_index - target_length, target_start_index) + 1, 1)
-            # start_range = range(target_start_index - sampled_length + 1, target_end_index + 1, 1)
-            start_range = range(feature_length)
+            start_range = range(target_start_index - sampled_length + 1, target_end_index + 1, 1)
+            # start_range = range(feature_length)
 
             sampled_start_index = random.choice(start_range)
             sampled_end_index = sampled_start_index + sampled_length
