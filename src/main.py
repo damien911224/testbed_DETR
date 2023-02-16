@@ -553,7 +553,7 @@ def train(config):
                                 tgt_QQ = torch.sqrt(torch.matmul(QK, QK.transpose(0, 1)))
                                 tgt_QQ = (tgt_QQ / torch.sum(tgt_QQ, dim=-1, keepdim=True)).numpy()
 
-                                this_targets = target_dict[n_i]["segments"]
+                                this_targets = target_dict[n_i]["segments"].detach().cpu().numpy()
 
                                 src_KK = predictions["K_weights"][:, n_i].detach().cpu().numpy()
                                 src_KK_mean = np.mean(src_KK, axis=0)
