@@ -778,6 +778,18 @@ if __name__ == "__main__":
             "dataset": args.dataset,
             "postfix": args.postfix,
 
+            # dataset
+            "root_path": os.path.abspath(".."),
+            "dataset_root_path": "/mnt/hdd0",
+            "number_of_classes": 20 + 1 if args.dataset == "thumos14" else 200 + 1,
+            "use_random_crop": True,
+            "crop_length": 25 if args.dataset == "thumos14" else 9,
+            "feature_frame_step_size": 8,
+            "video_fps": 25.0,
+            "temporal_width": 64,
+            "feature_width": 256 if args.dataset == "thumos14" else 256,
+            "dformat": "NDHWC",
+
             # train
             "seed": 2023,
             "epochs": 3000 if args.dataset == "thumos14" else 500,
@@ -793,7 +805,7 @@ if __name__ == "__main__":
 
             # test
             "nms_threshold": 0.65,
-            "testing_step": 128,
+            "testing_step": 64,
             "use_soft_nms": False,
             "multiclass_nms": True,
             "max_seg_num": 100,
@@ -801,18 +813,6 @@ if __name__ == "__main__":
             "nms_sigma": 0.75,
             "voting_thresh": 0.9,  # [0.75, 0.90]
             "iou_threshold": 0.1,
-
-            # dataset
-            "root_path": os.path.abspath(".."),
-            "dataset_root_path": "/mnt/hdd0",
-            "number_of_classes": 20 + 1 if args.dataset == "thumos14" else 200 + 1,
-            "use_random_crop": True,
-            "crop_length": 25 if args.dataset == "thumos14" else 9,
-            "feature_frame_step_size": 8,
-            "video_fps": 25.0,
-            "temporal_width": 64,
-            "feature_width": 256 if args.dataset == "thumos14" else 256,
-            "dformat": "NDHWC",
 
             # model
             "model_name": "SelfDETR",
