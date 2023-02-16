@@ -766,7 +766,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
 
     argparser.add_argument("--num_gpus", type=int, default=1)
-    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][0])
+    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][1])
     argparser.add_argument("--postfix", type=str, default=None)
 
     args = argparser.parse_args()
@@ -798,7 +798,7 @@ if __name__ == "__main__":
             "ckpt_save_term": 50 if args.dataset == "thumos14" else 5,
             "display_term": 1,
             "batch_size": 16 // args.num_gpus if args.dataset == "thumos14" else 16 // args.num_gpus,
-            "num_workers": 48,
+            "num_workers": 96,
             "prefetch_factor": 2,
             "weight_decay": 1.0e-4,
             "clip_norm": 0.1,
