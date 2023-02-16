@@ -277,7 +277,7 @@ class Datasets():
             else:
                 sampled_length = self.datasets.config.feature_width
 
-            start_range = 0
+            start_range = range(1)
             # start_range = range(target_start_index,
             #                     max(target_end_index - target_length // 4, target_start_index) + 1, 1)
             # start_range = range(target_start_index,
