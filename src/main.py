@@ -235,26 +235,26 @@ def train(config):
                             this_pred_logits = all_pred_logits[loop_index]
                             this_pred_segments = all_pred_segments[loop_index]
 
-                            # Q, C = this_pred_logits.shape
-                            # # sort across different instances, pick top 100 at most
-                            # topk_values, topk_indexes = torch.topk(this_pred_logits.flatten(), min(200, Q * C), dim=0)
-                            # scores = topk_values.numpy()
-                            # topk_segments = topk_indexes // C
-                            # class_indices = (topk_indexes % C).numpy() + 1
-                            # # bs, nq, 2; bs, num, 2
-                            # segments = torch.gather(this_pred_segments, 0, topk_segments.unsqueeze(-1).repeat(1, 2))
-                            # p_s = segments[..., 0].numpy()
-                            # p_e = segments[..., 1].numpy()
+                            Q, C = this_pred_logits.shape
+                            # sort across different instances, pick top 100 at most
+                            topk_values, topk_indexes = torch.topk(this_pred_logits.flatten(), min(200, Q * C), dim=0)
+                            scores = topk_values.numpy()
+                            topk_segments = topk_indexes // C
+                            class_indices = (topk_indexes % C).numpy() + 1
+                            # bs, nq, 2; bs, num, 2
+                            segments = torch.gather(this_pred_segments, 0, topk_segments.unsqueeze(-1).repeat(1, 2))
+                            p_s = segments[..., 0].numpy()
+                            p_e = segments[..., 1].numpy()
 
-                            this_pred_logits = this_pred_logits.numpy()
-                            this_pred_segments = this_pred_segments.numpy()
+                            # this_pred_logits = this_pred_logits.numpy()
+                            # this_pred_segments = this_pred_segments.numpy()
 
-                            p_s = this_pred_segments[..., 0]
-                            p_e = this_pred_segments[..., 1]
-                            scores = np.max(this_pred_logits, axis=-1)
+                            # p_s = this_pred_segments[..., 0]
+                            # p_e = this_pred_segments[..., 1]
+                            # scores = np.max(this_pred_logits, axis=-1)
 
-                            class_indices = np.argmax(this_pred_logits, axis=-1)
-                            class_indices += 1
+                            # class_indices = np.argmax(this_pred_logits, axis=-1)
+                            # class_indices += 1
 
                             valid_flags = p_e >= p_s
                             p_s = p_s[valid_flags]
@@ -766,7 +766,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
 
     argparser.add_argument("--num_gpus", type=int, default=1)
-    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][1])
+    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][0])
     argparser.add_argument("--postfix", type=str, default=None)
 
     args = argparser.parse_args()
