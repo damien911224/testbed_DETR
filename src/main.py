@@ -818,12 +818,12 @@ if __name__ == "__main__":
             "model_name": "SelfDETR",
             "position_embedding": "sine",
             "hidden_dim": 256,
-            "num_queries": 40, # 40
+            "num_queries": 100, # 40
             "dropout": 0.1,
             "nheads": 8,
             "dim_feedforward": 2048,  # 1024
-            "enc_layers": 2, # 2
-            "dec_layers": 4, # 4
+            "enc_layers": 6, # 2
+            "dec_layers": 6, # 4
             "aux_loss": True,
             "seg_refine": True,
             "use_classification": False,
