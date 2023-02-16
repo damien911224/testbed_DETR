@@ -257,10 +257,10 @@ class Datasets():
                 scaled_feature_targets[start_index:end_index + 1, 0] = 0.0
                 scaled_feature_targets[start_index:end_index + 1, target] = 1.0
 
-            # target_segment = random.choice(scaled_segments.tolist())
-            # target_start_index = target_segment[0]
-            # target_end_index = target_segment[1]
-            # target_length = target_end_index - target_start_index + 1
+            target_segment = random.choice(scaled_segments.tolist())
+            target_start_index = target_segment[0]
+            target_end_index = target_segment[1]
+            target_length = target_end_index - target_start_index + 1
 
             # # pad features and targets to indicate the boundary of the video
             # scaled_feature_targets = np.array(scaled_feature_targets, dtype=np.float32)
@@ -274,10 +274,12 @@ class Datasets():
             if self.datasets.config.dataset == "activitynet":
                 sampled_length = feature_length
                 # sampled_length = random.choice(range(max(feature_length // 4, 2), feature_length + 1))
+                start_range = range(1)
             else:
                 sampled_length = self.datasets.config.feature_width
+                start_range = range(target_start_index,
+                                    max(target_end_index - target_length // 4, target_start_index) + 1, 1)
 
-            start_range = range(1)
             # start_range = range(target_start_index,
             #                     max(target_end_index - target_length // 4, target_start_index) + 1, 1)
             # start_range = range(target_start_index,
