@@ -818,7 +818,7 @@ if __name__ == "__main__":
             "model_name": "SelfDETR",
             "position_embedding": "sine",
             "hidden_dim": 256,
-            "num_queries": 100, # 40
+            "num_queries": 200 if args.dataset == "thumos14" else 100, # 40
             "dropout": 0.1,
             "nheads": 8,
             "dim_feedforward": 2048,  # 1024
@@ -826,7 +826,7 @@ if __name__ == "__main__":
             "dec_layers": 6, # 4
             "aux_loss": True,
             "seg_refine": True,
-            "use_classification": False,
+            "use_classification": args.dataset == "thumos14",
             "act_reg": False,
             "use_KK": True,
             "use_QQ": True,
