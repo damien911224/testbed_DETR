@@ -330,10 +330,11 @@ class Datasets():
 
             features = np.array(features, dtype=np.float32)
 
-            if self.datasets.config.dataset == "thumos14":
-                copy_paste = False
-            else:
-                copy_paste = random.choice([True, False])
+            # if self.datasets.config.dataset == "thumos14":
+            #     copy_paste = False
+            # else:
+            #     copy_paste = random.choice([True, False])
+            copy_paste = False
             if copy_paste:
                 while True:
                     source_splits = random.choice(self.tf_data).split(" ")
