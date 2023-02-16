@@ -565,7 +565,7 @@ def train(config):
                                     e_i = round((box[0] + box[1] / 2) * (H - 1))
                                     KK_box[s_i:e_i + 1] = 1.0
                                 snes, plot_axis, num_plots = list(), 0, L + 2 + 1
-                                H_labels = ["{}".format(x) for x in range(1, H + 1, 1)] + ["GT"] * H // 40
+                                H_labels = ["{}".format(x) for x in range(1, H + 1, 1)] + ["GT"] * (H // 40)
                                 W_labels = ["{}".format(x) for x in range(1, H + 1, 1)]
                                 fig, axs = plt.subplots(1, num_plots,
                                                         figsize=(10 * num_plots, 10),
@@ -606,7 +606,7 @@ def train(config):
                                     e_i = round((box[0] + box[1] / 2) * (H - 1))
                                     QQ_box[s_i:e_i + 1] = 1.0
                                 snes, plot_axis, num_plots = list(), 0, L + 2 + 1
-                                H_labels = ["{}".format(x) for x in range(1, H + 1, 1)] + ["GT"] * H // 40
+                                H_labels = ["{}".format(x) for x in range(1, H + 1, 1)] + ["GT"] * (H // 40)
                                 W_labels = ["{}".format(x) for x in range(1, H + 1, 1)]
                                 fig, axs = plt.subplots(1, num_plots,
                                                         figsize=(10 * num_plots, 10),
