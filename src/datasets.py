@@ -262,14 +262,14 @@ class Datasets():
             # target_end_index = target_segment[1]
             # target_length = target_end_index - target_start_index + 1
 
-            # pad features and targets to indicate the boundary of the video
-            scaled_feature_targets = np.array(scaled_feature_targets, dtype=np.float32)
-            kinetics_features = np.concatenate([kinetics_features, np.zeros_like(kinetics_features[0:1])], axis=0)
-            dummy_onehot = np.zeros(dtype=np.float32, shape=(self.datasets.config.number_of_classes))
-            dummy_onehot[0] = 1.0
-            scaled_feature_targets = \
-                np.concatenate([scaled_feature_targets, np.expand_dims(dummy_onehot, axis=0)], axis=0)
-            feature_length += 1
+            # # pad features and targets to indicate the boundary of the video
+            # scaled_feature_targets = np.array(scaled_feature_targets, dtype=np.float32)
+            # kinetics_features = np.concatenate([kinetics_features, np.zeros_like(kinetics_features[0:1])], axis=0)
+            # dummy_onehot = np.zeros(dtype=np.float32, shape=(self.datasets.config.number_of_classes))
+            # dummy_onehot[0] = 1.0
+            # scaled_feature_targets = \
+            #     np.concatenate([scaled_feature_targets, np.expand_dims(dummy_onehot, axis=0)], axis=0)
+            # feature_length += 1
 
             if self.datasets.config.dataset == "activitynet":
                 sampled_length = feature_length
