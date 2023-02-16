@@ -787,7 +787,7 @@ if __name__ == "__main__":
             "feature_frame_step_size": 8,
             "video_fps": 25.0,
             "temporal_width": 64,
-            "feature_width": 256 if args.dataset == "thumos14" else 192,
+            "feature_width": 256 if args.dataset == "thumos14" else 128,
             "dformat": "NDHWC",
 
             # train
