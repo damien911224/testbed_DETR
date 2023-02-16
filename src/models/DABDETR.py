@@ -595,7 +595,10 @@ class MLP(nn.Module):
 def build(args):
     pos_embed = build_position_encoding(args)
     transformer = build_transformer(args)
-    num_classes = args.number_of_classes - 1
+    if config.use_classification:
+        num_classes = args.number_of_classes - 1
+    else:
+        num_classes = 1
 
     model = DABDETR(
         pos_embed,

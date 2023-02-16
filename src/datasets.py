@@ -274,17 +274,18 @@ class Datasets():
             if self.datasets.config.dataset == "activitynet":
                 sampled_length = feature_length
                 # sampled_length = random.choice(range(max(feature_length // 4, 2), feature_length + 1))
-                start_range = range(1)
+                # start_range = range(1)
             else:
                 sampled_length = self.datasets.config.feature_width
-                start_range = range(target_start_index,
-                                    max(target_end_index - target_length // 4, target_start_index) + 1, 1)
+                # start_range = range(target_start_index,
+                #                     max(target_end_index - target_length // 4, target_start_index) + 1, 1)
 
             # start_range = range(target_start_index,
             #                     max(target_end_index - target_length // 4, target_start_index) + 1, 1)
             # start_range = range(target_start_index,
             #                     max(target_end_index - target_length, target_start_index) + 1, 1)
             # start_range = range(target_start_index - sampled_length + 1, target_end_index + 1, 1)
+            start_range = range(feature_length)
 
             sampled_start_index = random.choice(start_range)
             sampled_end_index = sampled_start_index + sampled_length
@@ -437,7 +438,10 @@ class Datasets():
             if len(target_slices):
                 foreground_segments = target_slices
                 detection_targets[:len(foreground_segments), 0] = 1.0
-                detection_targets[:len(foreground_segments), 1] = foreground_segments[:, -1] - 1
+                if self.datasets.config.use_classification:
+                    detection_targets[:len(foreground_segments), 1] = foreground_segments[:, -1] - 1
+                else:
+                    detection_targets[:len(foreground_segments), 1] = 0
                 detection_targets[:len(foreground_segments), 2:] = \
                     np.stack(((foreground_segments[:, 0] + foreground_segments[:, 1]) / 2,
                               (foreground_segments[:, 1] - foreground_segments[:, 0])), axis=-1)
@@ -653,7 +657,10 @@ class Datasets():
             if len(target_slices):
                 foreground_segments = target_slices
                 detection_targets[:len(foreground_segments), 0] = 1.0
-                detection_targets[:len(foreground_segments), 1] = foreground_segments[:, -1] - 1
+                if self.datasets.config.use_classification:
+                    detection_targets[:len(foreground_segments), 1] = foreground_segments[:, -1] - 1
+                else:
+                    detection_targets[:len(foreground_segments), 1] = 0
                 detection_targets[:len(foreground_segments), 2:] = \
                     np.stack(((foreground_segments[:, 0] + foreground_segments[:, 1]) / 2,
                               (foreground_segments[:, 1] - foreground_segments[:, 0])), axis=-1)
