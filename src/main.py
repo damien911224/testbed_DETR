@@ -766,7 +766,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
 
     argparser.add_argument("--num_gpus", type=int, default=1)
-    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][0])
+    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][1])
     argparser.add_argument("--postfix", type=str, default=None)
 
     args = argparser.parse_args()
@@ -834,8 +834,8 @@ if __name__ == "__main__":
             "seg_loss_coef": 5,
             "iou_loss_coef": 2,
             "act_loss_coef": 4,
-            "KK_loss_coef": 20,
-            "QQ_loss_coef": 20,
+            "KK_loss_coef": 10,
+            "QQ_loss_coef": 10,
             "set_cost_class": 6, # 6
             "set_cost_seg": 5,
             "set_cost_iou": 2,
