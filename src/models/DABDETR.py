@@ -109,19 +109,19 @@ class DABDETR(nn.Module):
             # hack implementation for segment refinement
             self.transformer.decoder.segment_embed = self.segment_embed
 
-        if with_act_reg:
-            # RoIAlign params
-            self.roi_size = 16
-            self.roi_scale = 0
-            self.roi_extractor = ROIAlign(self.roi_size, self.roi_scale)
-            self.actionness_pred = nn.Sequential(
-                nn.Linear(self.roi_size * hidden_dim, hidden_dim),
-                nn.ReLU(inplace=True),
-                nn.Linear(hidden_dim, hidden_dim),
-                nn.ReLU(inplace=True),
-                nn.Linear(hidden_dim, 1),
-                nn.Sigmoid()
-            )
+        # if with_act_reg:
+        #     # RoIAlign params
+        #     self.roi_size = 16
+        #     self.roi_scale = 0
+        #     self.roi_extractor = ROIAlign(self.roi_size, self.roi_scale)
+        #     self.actionness_pred = nn.Sequential(
+        #         nn.Linear(self.roi_size * hidden_dim, hidden_dim),
+        #         nn.ReLU(inplace=True),
+        #         nn.Linear(hidden_dim, hidden_dim),
+        #         nn.ReLU(inplace=True),
+        #         nn.Linear(hidden_dim, 1),
+        #         nn.Sigmoid()
+        #     )
 
     def _to_roi_align_format(self, rois, T, scale_factor=1):
         '''Convert RoIs to RoIAlign format.

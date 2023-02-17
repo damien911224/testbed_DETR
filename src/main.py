@@ -822,7 +822,7 @@ if __name__ == "__main__":
             "dropout": 0.1,
             "nheads": 8,
             "dim_feedforward": 1024,  # 1024
-            "enc_layers": 2, # 2
+            "enc_layers": 2 if args.dataset == "thumos14" else 3, # 2
             "dec_layers": 4, # 4
             "aux_loss": True,
             "seg_refine": True,
@@ -840,6 +840,7 @@ if __name__ == "__main__":
             "set_cost_seg": 5,
             "set_cost_iou": 2,
             "focal_alpha": 0.25,
+            "pos_temperature": 20, # 10000
         }
 
     config = EasyDict(config)
