@@ -818,7 +818,7 @@ if __name__ == "__main__":
             "model_name": "SelfDETR",
             "position_embedding": "sine",
             "hidden_dim": 256,
-            "num_queries": 200 if args.dataset == "thumos14" else 40, # 40
+            "num_queries": 40 if args.dataset == "thumos14" else 60, # 40
             "dropout": 0.1,
             "nheads": 8,
             "dim_feedforward": 1024,  # 1024
@@ -836,7 +836,7 @@ if __name__ == "__main__":
             "act_loss_coef": 4,
             "KK_loss_coef": 5,
             "QQ_loss_coef": 5,
-            "set_cost_class": 2, # 6
+            "set_cost_class": 6, # 6
             "set_cost_seg": 5,
             "set_cost_iou": 2,
             "focal_alpha": 0.25,
