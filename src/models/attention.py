@@ -251,13 +251,13 @@ class RelativeAttention(nn.Module):
         attn2 = attn2.contiguous().view(batch_size, self.n_heads, len_q, len_k)
         attn = (attn1 + attn2) / self.scale.to(query.device)
 
-        # if attn_mask is not None:
-        #     attn = attn.masked_fill(attn_mask == 0, -1e10)
-        #
-        # if key_padding_mask is not None:
-        #     attn = attn.view(batch_size, self.n_heads, len_q, len_k)
-        #     attn = attn.masked_fill(key_padding_mask.unsqueeze(1).unsqueeze(2), float('-inf'))
-        #     attn = attn.view(batch_size * self.n_heads, len_q, len_k)
+        if attn_mask is not None:
+            attn = attn.masked_fill(attn_mask == 0, -1e10)
+
+        if key_padding_mask is not None:
+            attn = attn.view(batch_size, self.n_heads, len_q, len_k)
+            attn = attn.masked_fill(key_padding_mask.unsqueeze(1).unsqueeze(2), float('-inf'))
+            attn = attn.view(batch_size * self.n_heads, len_q, len_k)
 
         attn = self.dropout(torch.softmax(attn, dim=-1))
 
