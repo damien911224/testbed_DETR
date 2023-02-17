@@ -285,7 +285,12 @@ class RelativeAttention(nn.Module):
 
         # x = [batch size, query len, hid dim]
 
-        return x
+        print(attn.shape)
+        exit()
+        attn = attn.view(batch_size, self.n_heads, len_q, len_k)
+        attn = attn.sum(dim=1) / self.n_heads
+
+        return x, attn
 
 
 def multi_head_attention_forward(query: Tensor,
