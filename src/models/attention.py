@@ -259,7 +259,9 @@ class RelativeAttention(nn.Module):
             print("key_padding_mask")
             attn = attn.masked_fill(key_padding_mask.unsqueeze(1).unsqueeze(2), float('-inf'))
 
-        attn = self.dropout(torch.softmax(attn, dim=-1))
+        # attn = self.dropout(torch.softmax(attn, dim=-1))
+        attn = softmax(attn - attn.max(dim=-1, keepdim=True)[0], dim=-1)
+        attn = self.dropout(attn)
 
         # attn = [batch size, n heads, query len, key len]
         r_v1 = value.view(batch_size, -1, self.n_heads, self.head_dim).permute(0, 2, 1, 3)
@@ -285,8 +287,6 @@ class RelativeAttention(nn.Module):
 
         # x = [batch size, query len, hid dim]
 
-        print(attn.shape)
-        exit()
         attn = attn.view(batch_size, self.n_heads, len_q, len_k)
         attn = attn.sum(dim=1) / self.n_heads
 
