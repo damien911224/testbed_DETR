@@ -792,7 +792,7 @@ if __name__ == "__main__":
 
             # train
             "seed": 2023,
-            "epochs": 300 if args.dataset == "thumos14" else 50,
+            "epochs": 300 if args.dataset == "thumos14" else 120,
             "lr": 2.0e-4 if args.dataset == "thumos14" else 1.0e-4,
             "validation_term": 100 if args.dataset == "thumos14" else 10,
             "ckpt_save_term": 50 if args.dataset == "thumos14" else 5,
