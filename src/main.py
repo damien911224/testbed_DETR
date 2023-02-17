@@ -840,7 +840,7 @@ if __name__ == "__main__":
             "set_cost_seg": 5,
             "set_cost_iou": 2,
             "focal_alpha": 0.25,
-            "pos_temperature": 10000, # 10000
+            "pos_temperature": 20, # 10000
         }
 
     config = EasyDict(config)
