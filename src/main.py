@@ -795,7 +795,7 @@ if __name__ == "__main__":
             "epochs": 3000 if args.dataset == "thumos14" else 120 * 5,
             "lr": 2.0e-4 if args.dataset == "thumos14" else 1.0e-4,
             "validation_term": 10 if args.dataset == "thumos14" else 10,
-            "ckpt_save_term": 20 if args.dataset == "thumos14" else 5,
+            "ckpt_save_term": 100 if args.dataset == "thumos14" else 5,
             "display_term": 1,
             "batch_size": 16 // args.num_gpus if args.dataset == "thumos14" else 16 // args.num_gpus,
             "num_workers": 48,
