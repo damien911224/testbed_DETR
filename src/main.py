@@ -766,7 +766,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
 
     argparser.add_argument("--num_gpus", type=int, default=1)
-    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][0])
+    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][1])
     argparser.add_argument("--postfix", type=str, default=None)
 
     args = argparser.parse_args()
@@ -818,12 +818,12 @@ if __name__ == "__main__":
             "model_name": "SelfDETR",
             "position_embedding": "sine",
             "hidden_dim": 256,
-            "num_queries": 40 if args.dataset == "thumos14" else 100,
+            "num_queries": 40 if args.dataset == "thumos14" else 60,
             "dropout": 0.1,
             "nheads": 8,
             "dim_feedforward": 2048,  # 1024
-            "enc_layers": 2 if args.dataset == "thumos14" else 6, # 2
-            "dec_layers": 4 if args.dataset == "thumos14" else 6, # 4
+            "enc_layers": 2 if args.dataset == "thumos14" else 3, # 2
+            "dec_layers": 4 if args.dataset == "thumos14" else 4, # 4
             "aux_loss": True,
             "seg_refine": True,
             "use_classification": True, # args.dataset == "thumos14"
