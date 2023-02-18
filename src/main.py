@@ -792,7 +792,7 @@ if __name__ == "__main__":
 
             # train
             "seed": 2023,
-            "epochs": 300 if args.dataset == "thumos14" else 120,
+            "epochs": 300 if args.dataset == "thumos14" else 120 * 5,
             "lr": 2.0e-4 if args.dataset == "thumos14" else 1.0e-4,
             "validation_term": 10 if args.dataset == "thumos14" else 10,
             "ckpt_save_term": 20 if args.dataset == "thumos14" else 5,
@@ -818,12 +818,12 @@ if __name__ == "__main__":
             "model_name": "SelfDETR",
             "position_embedding": "sine",
             "hidden_dim": 256,
-            "num_queries": 40 if args.dataset == "thumos14" else 60, # 40
+            "num_queries": 40 if args.dataset == "thumos14" else 100,
             "dropout": 0.1,
             "nheads": 8,
-            "dim_feedforward": 1024,  # 1024
-            "enc_layers": 2 if args.dataset == "thumos14" else 3, # 2
-            "dec_layers": 4, # 4
+            "dim_feedforward": 2048,  # 1024
+            "enc_layers": 2 if args.dataset == "thumos14" else 6, # 2
+            "dec_layers": 6, # 4
             "aux_loss": True,
             "seg_refine": True,
             "use_classification": True, # args.dataset == "thumos14"
@@ -836,7 +836,7 @@ if __name__ == "__main__":
             "act_loss_coef": 4,
             "KK_loss_coef": 10,
             "QQ_loss_coef": 10,
-            "set_cost_class": 6, # 6
+            "set_cost_class": 2, # 6
             "set_cost_seg": 5,
             "set_cost_iou": 2,
             "focal_alpha": 0.25,
