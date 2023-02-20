@@ -789,7 +789,7 @@ if __name__ == "__main__":
             "temporal_width": 64,
             "feature_width": 256 if args.dataset == "thumos14" else 256,
             "dformat": "NDHWC",
-            "copypaste_prob": 0.50,
+            "copypaste_prob": 0.00,
 
             # train
             "seed": 2023,
@@ -819,7 +819,7 @@ if __name__ == "__main__":
             "model_name": "SelfDETR",
             "position_embedding": "sine",
             "hidden_dim": 256,
-            "num_queries": 40 if args.dataset == "thumos14" else 40,
+            "num_queries": 40 if args.dataset == "thumos14" else 100,
             "dropout": 0.1,
             "nheads": 8,
             "dim_feedforward": 1024,  # 1024
