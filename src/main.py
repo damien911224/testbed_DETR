@@ -801,7 +801,7 @@ if __name__ == "__main__":
             "batch_size": 16 // args.num_gpus if args.dataset == "thumos14" else 16 // args.num_gpus,
             "num_workers": 48,
             "prefetch_factor": 2,
-            "weight_decay": 1.0e-2,
+            "weight_decay": 1.0e-4,
             "clip_norm": 0.1,
 
             # test
