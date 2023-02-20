@@ -819,7 +819,7 @@ if __name__ == "__main__":
             "model_name": "SelfDETR",
             "position_embedding": "sine",
             "hidden_dim": 256,
-            "num_queries": 40 if args.dataset == "thumos14" else 100,
+            "num_queries": 40 if args.dataset == "thumos14" else 40,
             "dropout": 0.1,
             "nheads": 8,
             "dim_feedforward": 1024,  # 1024
