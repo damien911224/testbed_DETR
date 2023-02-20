@@ -789,7 +789,7 @@ if __name__ == "__main__":
             "temporal_width": 64,
             "feature_width": 256 if args.dataset == "thumos14" else 256,
             "dformat": "NDHWC",
-            "copypaste_prob": 0.00,
+            "copypaste_prob": 0.50,
 
             # train
             "seed": 2023,
@@ -819,11 +819,11 @@ if __name__ == "__main__":
             "model_name": "SelfDETR",
             "position_embedding": "sine",
             "hidden_dim": 256,
-            "num_queries": 40 if args.dataset == "thumos14" else 100,
+            "num_queries": 40 if args.dataset == "thumos14" else 40,
             "dropout": 0.1,
             "nheads": 8,
             "dim_feedforward": 1024,  # 1024
-            "enc_layers": 2 if args.dataset == "thumos14" else 4, # 2
+            "enc_layers": 2 if args.dataset == "thumos14" else 2, # 2
             "dec_layers": 4 if args.dataset == "thumos14" else 4, # 4
             "aux_loss": True,
             "seg_refine": True,
