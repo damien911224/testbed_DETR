@@ -272,8 +272,8 @@ class Datasets():
             # feature_length += 1
 
             if self.datasets.config.dataset == "activitynet":
-                sampled_length = feature_length
-                # sampled_length = random.choice(range(max(feature_length // 4, 2), feature_length + 1))
+                # sampled_length = feature_length
+                sampled_length = random.choice(range(max(feature_length // 4, 2), feature_length + 1))
                 # start_range = range(1)
             else:
                 sampled_length = self.datasets.config.feature_width
@@ -333,11 +333,7 @@ class Datasets():
 
             features = np.array(features, dtype=np.float32)
 
-            # if self.datasets.config.dataset == "thumos14":
-            #     copy_paste = False
-            # else:
-            #     copy_paste = random.choice([True, False])
-            copy_paste = False
+            copy_paste = random.random() < self.datasets.config.copypaste_prob
             if copy_paste:
                 while True:
                     source_splits = random.choice(self.tf_data).split(" ")

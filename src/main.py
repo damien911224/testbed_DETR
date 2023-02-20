@@ -789,6 +789,7 @@ if __name__ == "__main__":
             "temporal_width": 64,
             "feature_width": 256 if args.dataset == "thumos14" else 256,
             "dformat": "NDHWC",
+            "copypaste_prob": 0.50,
 
             # train
             "seed": 2023,
