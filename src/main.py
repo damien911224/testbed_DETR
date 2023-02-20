@@ -787,12 +787,12 @@ if __name__ == "__main__":
             "feature_frame_step_size": 8,
             "video_fps": 25.0,
             "temporal_width": 64,
-            "feature_width": 256 if args.dataset == "thumos14" else 128,
+            "feature_width": 256 if args.dataset == "thumos14" else 256,
             "dformat": "NDHWC",
 
             # train
             "seed": 2023,
-            "epochs": 3000 if args.dataset == "thumos14" else 120 * 5,
+            "epochs": 3000 if args.dataset == "thumos14" else 120,
             "lr": 2.0e-4 if args.dataset == "thumos14" else 1.0e-4,
             "validation_term": 10 if args.dataset == "thumos14" else 10,
             "ckpt_save_term": 100 if args.dataset == "thumos14" else 5,
@@ -800,7 +800,7 @@ if __name__ == "__main__":
             "batch_size": 16 // args.num_gpus if args.dataset == "thumos14" else 16 // args.num_gpus,
             "num_workers": 48,
             "prefetch_factor": 2,
-            "weight_decay": 1.0e-4,
+            "weight_decay": 1.0e-2,
             "clip_norm": 0.1,
 
             # test
@@ -818,7 +818,7 @@ if __name__ == "__main__":
             "model_name": "SelfDETR",
             "position_embedding": "sine",
             "hidden_dim": 256,
-            "num_queries": 40 if args.dataset == "thumos14" else 75,
+            "num_queries": 40 if args.dataset == "thumos14" else 80,
             "dropout": 0.1,
             "nheads": 8,
             "dim_feedforward": 1024,  # 1024
