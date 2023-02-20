@@ -813,7 +813,7 @@ if __name__ == "__main__":
             "min_score": 1.0e-9,
             "nms_sigma": 0.75,
             "voting_thresh": 0.9,  # [0.75, 0.90]
-            "iou_threshold": 0.1,
+            "iou_threshold": 0.40,
 
             # model
             "model_name": "SelfDETR",
