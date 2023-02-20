@@ -807,7 +807,7 @@ if __name__ == "__main__":
             # test
             "nms_threshold": 0.65,
             "testing_step": 64,
-            "use_soft_nms": False,
+            "use_soft_nms": True,
             "multiclass_nms": True,
             "max_seg_num": 100,
             "min_score": 1.0e-9,
