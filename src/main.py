@@ -810,7 +810,7 @@ if __name__ == "__main__":
             "use_soft_nms": False,
             "multiclass_nms": True,
             "max_seg_num": 100,
-            "min_score": 0.001,
+            "min_score": 1.0e-9,
             "nms_sigma": 0.75,
             "voting_thresh": 0.9,  # [0.75, 0.90]
             "iou_threshold": 0.1,
