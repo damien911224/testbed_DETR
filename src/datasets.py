@@ -272,8 +272,8 @@ class Datasets():
             # feature_length += 1
 
             if self.datasets.config.dataset == "activitynet":
-                sampled_length = feature_length
-                # sampled_length = random.choice(range(max(feature_length // 4, 2), feature_length + 1))
+                # sampled_length = feature_length
+                sampled_length = random.choice(range(max(feature_length // 4, 2), feature_length + 1))
                 # start_range = range(1)
             else:
                 sampled_length = self.datasets.config.feature_width
