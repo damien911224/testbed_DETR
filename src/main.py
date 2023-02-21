@@ -122,12 +122,12 @@ def train(config):
             for k in loss_dict.keys():
                 print(k)
                 print(weight_dict.keys())
-                exit()
                 if k in list(weight_dict.keys()):
                     if "QQ" or "KK" in k:
                         if epoch < 30:
                             continue
                     losses.append(loss_dict[k] * weight_dict[k])
+            exit()
             losses = torch.stack(losses).sum()
             # losses = sum(loss_dict[k] * weight_dict[k] for k in loss_dict.keys() if k in weight_dict)
             optimizer.zero_grad()
