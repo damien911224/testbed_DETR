@@ -118,14 +118,15 @@ def train(config):
             outputs = model(features)
             loss_dict = criterion(outputs, target_dict)
             weight_dict = criterion.weight_dict
-            losses = 0.0
+            losses = list()
             for k in loss_dict.keys():
                 if k in weight_dict:
                     if "QQ" or "KK" in k:
                         if epoch < 30:
                             continue
 
-                    losses += loss_dict[k] * weight_dict[k]
+                    losses.append(loss_dict[k] * weight_dict[k])
+            losses = torch.stack(losses).sum()
             # losses = sum(loss_dict[k] * weight_dict[k] for k in loss_dict.keys() if k in weight_dict)
             optimizer.zero_grad()
             losses.backward()
