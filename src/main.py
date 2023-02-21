@@ -121,7 +121,7 @@ def train(config):
             losses = list()
             for k in loss_dict.keys():
                 print(k)
-                print(weight_dict.keys())
+                print(k in weight_dict)
                 if k in list(weight_dict.keys()):
                     if "QQ" or "KK" in k:
                         if epoch < 30:
