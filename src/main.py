@@ -831,9 +831,9 @@ if __name__ == "__main__":
             "num_queries": 40 if args.dataset == "thumos14" else 100,
             "dropout": 0.1,
             "nheads": 8,
-            "dim_feedforward": 1024,  # 1024
-            "enc_layers": 2 if args.dataset == "thumos14" else 2, # 2
-            "dec_layers": 4 if args.dataset == "thumos14" else 4, # 4
+            "dim_feedforward": 2048,  # 1024
+            "enc_layers": 2 if args.dataset == "thumos14" else 6, # 2
+            "dec_layers": 4 if args.dataset == "thumos14" else 6, # 4
             "aux_loss": True,
             "seg_refine": True,
             "use_classification": True, # args.dataset == "thumos14"
