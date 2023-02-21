@@ -124,7 +124,7 @@ def train(config):
                     if "QQ" or "KK" in k:
                         if epoch < 30:
                             continue
-
+                    print(k)
                     losses.append(loss_dict[k] * weight_dict[k])
             losses = torch.stack(losses).sum()
             # losses = sum(loss_dict[k] * weight_dict[k] for k in loss_dict.keys() if k in weight_dict)
