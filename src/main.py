@@ -645,27 +645,27 @@ def train(config):
                                 plt.close(fig)
                                 QQ_images.append(vis_array)
 
-                                map = predictions["K_weights"][-1, n_i].detach().cpu().numpy()
-                                H, W = map.shape
-                                H_labels = ["{}".format(x) for x in range(1, H + 1, 1)]
-                                W_labels = ["{}".format(x) for x in range(1, W + 1, 1)]
-                                map -= np.min(map)
-                                map /= np.max(map)
-                                df = pd.DataFrame(map, H_labels, W_labels)
-                                ax = sn.heatmap(df, cbar=False, xticklabels=False, yticklabels=False, square=True)
-                                plt.savefig(os.path.join("../temp", "K_E{:02d}.png".format(epoch)))
-                                plt.close()
-
-                                map = predictions["Q_weights"][-1, n_i].detach().cpu().numpy()
-                                H, W = map.shape
-                                H_labels = ["{}".format(x) for x in range(1, H + 1, 1)]
-                                W_labels = ["{}".format(x) for x in range(1, W + 1, 1)]
-                                map -= np.min(map)
-                                map /= np.max(map)
-                                df = pd.DataFrame(map, H_labels, W_labels)
-                                ax = sn.heatmap(df, cbar=False, xticklabels=False, yticklabels=False, square=True)
-                                plt.savefig(os.path.join("../temp", "Q_E{:02d}.png".format(epoch)))
-                                plt.close()
+                                # map = predictions["K_weights"][-1, n_i].detach().cpu().numpy()
+                                # H, W = map.shape
+                                # H_labels = ["{}".format(x) for x in range(1, H + 1, 1)]
+                                # W_labels = ["{}".format(x) for x in range(1, W + 1, 1)]
+                                # map -= np.min(map)
+                                # map /= np.max(map)
+                                # df = pd.DataFrame(map, H_labels, W_labels)
+                                # ax = sn.heatmap(df, cbar=False, xticklabels=False, yticklabels=False, square=True)
+                                # plt.savefig(os.path.join("../temp", "K_E{:02d}.png".format(epoch)))
+                                # plt.close()
+                                #
+                                # map = predictions["Q_weights"][-1, n_i].detach().cpu().numpy()
+                                # H, W = map.shape
+                                # H_labels = ["{}".format(x) for x in range(1, H + 1, 1)]
+                                # W_labels = ["{}".format(x) for x in range(1, W + 1, 1)]
+                                # map -= np.min(map)
+                                # map /= np.max(map)
+                                # df = pd.DataFrame(map, H_labels, W_labels)
+                                # ax = sn.heatmap(df, cbar=False, xticklabels=False, yticklabels=False, square=True)
+                                # plt.savefig(os.path.join("../temp", "Q_E{:02d}.png".format(epoch)))
+                                # plt.close()
 
                         print_string = \
                             "|{:10s}|Epoch {:3d}/{:3d}|Batch {:3d}/{:3d}|Loss: {:.2f}".format(
@@ -823,7 +823,7 @@ if __name__ == "__main__":
 
             # train
             "seed": 2023,
-            "epochs": 3000 if args.dataset == "thumos14" else 60,
+            "epochs": 3000 if args.dataset == "thumos14" else 120,
             "lr": 2.0e-4 if args.dataset == "thumos14" else 1.0e-4,
             "validation_term": 10 if args.dataset == "thumos14" else 10,
             "ckpt_save_term": 100 if args.dataset == "thumos14" else 5,
@@ -833,7 +833,7 @@ if __name__ == "__main__":
             "prefetch_factor": 2,
             "weight_decay": 1.0e-4,
             "clip_norm": 0.1,
-            "lr_decay_steps": (60, 80) if args.dataset == "thumos14" else (40, 50),
+            "lr_decay_steps": (60, 80) if args.dataset == "thumos14" else (80, 100),
 
             # test
             "nms_threshold": 0.65,
@@ -858,16 +858,16 @@ if __name__ == "__main__":
             "dec_layers": 4 if args.dataset == "thumos14" else 4, # 4
             "aux_loss": True,
             "seg_refine": True,
-            "use_classification": False, # args.dataset == "thumos14"
+            "use_classification": True, # args.dataset == "thumos14"
             "act_reg": False,
-            "use_KK": False,
-            "use_QQ": False,
+            "use_KK": True,
+            "use_QQ": True,
             "cls_loss_coef": 2,
             "seg_loss_coef": 5,
             "iou_loss_coef": 2,
             "act_loss_coef": 4,
-            "KK_loss_coef": 5,
-            "QQ_loss_coef": 5,
+            "KK_loss_coef": 10,
+            "QQ_loss_coef": 10,
             "set_cost_class": 2, # 6
             "set_cost_seg": 5,
             "set_cost_iou": 2,
