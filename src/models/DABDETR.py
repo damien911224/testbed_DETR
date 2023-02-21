@@ -394,8 +394,8 @@ class SetCriterion(nn.Module):
         losses = {}
 
         loss_QQ = F.kl_div(src_QQ, tgt_QQ, log_target=True, reduction="none").sum(-1)
-        loss_QQ = loss_QQ * IoU_weight.unsqueeze(-1)
-        loss_QQ = loss_QQ.sum() / loss_QQ
+        # loss_QQ = loss_QQ * IoU_weight.unsqueeze(-1)
+        # loss_QQ = loss_QQ.sum() / loss_QQ
         loss_QQ = loss_QQ.mean()
 
         losses['loss_QQ'] = loss_QQ
