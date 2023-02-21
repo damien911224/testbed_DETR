@@ -667,8 +667,6 @@ def train(config):
                                 plt.savefig(os.path.join("../temp", "Q_E{:02d}.png".format(epoch)))
                                 plt.close()
 
-                                exit()
-
                         print_string = \
                             "|{:10s}|Epoch {:3d}/{:3d}|Batch {:3d}/{:3d}|Loss: {:.2f}".format(
                                 "Validation", epoch, config.epochs, validation_batch_index + 1, loop_rounds, loss)
