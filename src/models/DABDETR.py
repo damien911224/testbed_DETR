@@ -361,12 +361,13 @@ class SetCriterion(nn.Module):
         assert 'pred_segments' in outputs
 
         idx = self._get_src_permutation_idx(indices)
-        src_segments = outputs['pred_segments'][idx]
-        target_segments = torch.cat([t['segments'][i] for t, (_, i) in zip(targets, indices)], dim=0)
+        src_segments = outputs['pred_segments'][idx].detach()
+        target_segments = torch.cat([t['segments'][i] for t, (_, i) in zip(targets, indices)], dim=0).detach()
 
         loss_iou = 1 - torch.diag(segment_ops.segment_iou(
             segment_ops.segment_cw_to_t1t2(src_segments),
             segment_ops.segment_cw_to_t1t2(target_segments)))
+        loss_iou = loss_iou.detach()
         print(loss_iou.shape)
         exit()
 
