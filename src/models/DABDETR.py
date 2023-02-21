@@ -360,16 +360,21 @@ class SetCriterion(nn.Module):
         assert 'C_weights' in outputs
         assert 'pred_segments' in outputs
 
-        idx = self._get_src_permutation_idx(indices)
-        src_segments = outputs['pred_segments'][idx].detach()
-        target_segments = torch.cat([t['segments'][i] for t, (_, i) in zip(targets, indices)], dim=0).detach()
-
-        loss_iou = 1 - torch.diag(segment_ops.segment_iou(
-            segment_ops.segment_cw_to_t1t2(src_segments),
-            segment_ops.segment_cw_to_t1t2(target_segments)))
-        loss_iou = loss_iou.detach()
-        print(loss_iou.shape)
-        exit()
+        IoUs = list()
+        for n_i in range(len(targets)):
+            src_segments = outputs['pred_segments'][n_i].detach()
+            tgt_segments = targets[n_i]['segments'].detach()
+            this_IoUs = list()
+            for t_i in range(len(tgt_segments)):
+                this_IoU = segment_ops.segment_iou(segment_ops.segment_cw_to_t1t2(tgt_segments[t_i]),
+                                                   segment_ops.segment_cw_to_t1t2(src_segments))
+                this_IoU = torch.max(this_IoU, dim=1)[0]
+                this_IoUs.append(this_IoU)
+            this_IoUs = torch.mean(this_IoUs)
+            IoUs.append(this_IoUs)
+        IoUs = torch.stack(IoUs).detach()
+        IoU_weight = IoUs / 0.5
+        print(IoU_weight.shape)
 
         Q_weights = torch.mean(outputs["Q_weights"], dim=0)
         C_weights = outputs["C_weights"].detach()
@@ -384,6 +389,8 @@ class SetCriterion(nn.Module):
         losses = {}
 
         loss_QQ = F.kl_div(src_QQ, tgt_QQ, log_target=True, reduction="none").sum(-1)
+        loss_QQ = loss_QQ * max_IoU.unsqueeze(-1)
+        loss_QQ = loss_QQ.sum() / loss_QQ
         loss_QQ = loss_QQ.mean()
 
         losses['loss_QQ'] = loss_QQ
