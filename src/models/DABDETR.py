@@ -375,6 +375,7 @@ class SetCriterion(nn.Module):
         IoUs = torch.stack(IoUs).detach()
         IoU_weight = IoUs / 0.5
         print(IoU_weight.shape)
+        exit()
 
         Q_weights = torch.mean(outputs["Q_weights"], dim=0)
         C_weights = outputs["C_weights"].detach()
@@ -389,7 +390,7 @@ class SetCriterion(nn.Module):
         losses = {}
 
         loss_QQ = F.kl_div(src_QQ, tgt_QQ, log_target=True, reduction="none").sum(-1)
-        loss_QQ = loss_QQ * max_IoU.unsqueeze(-1)
+        loss_QQ = loss_QQ * IoU_weight.unsqueeze(-1)
         loss_QQ = loss_QQ.sum() / loss_QQ
         loss_QQ = loss_QQ.mean()
 
