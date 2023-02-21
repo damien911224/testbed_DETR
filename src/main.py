@@ -653,7 +653,7 @@ def train(config):
                                 map /= np.max(map)
                                 df = pd.DataFrame(map, H_labels, W_labels)
                                 ax = sn.heatmap(df, cbar=False, xticklabels=False, yticklabels=False, square=True)
-                                plt.savefig("K.png")
+                                plt.savefig(os.path.join("../temp", "K_E{:02d}.png".format(epoch)))
                                 plt.close()
 
                                 map = predictions["Q_weights"][-1, n_i].detach().cpu().numpy()
@@ -664,7 +664,7 @@ def train(config):
                                 map /= np.max(map)
                                 df = pd.DataFrame(map, H_labels, W_labels)
                                 ax = sn.heatmap(df, cbar=False, xticklabels=False, yticklabels=False, square=True)
-                                plt.savefig("Q.png")
+                                plt.savefig(os.path.join("../temp", "Q_E{:02d}.png".format(epoch)))
                                 plt.close()
 
                                 exit()
@@ -819,7 +819,7 @@ if __name__ == "__main__":
             "feature_frame_step_size": 8,
             "video_fps": 25.0,
             "temporal_width": 64,
-            "feature_width": 256 if args.dataset == "thumos14" else 256,
+            "feature_width": 256 if args.dataset == "thumos14" else 128,
             "dformat": "NDHWC",
             "copypaste_prob": 0.00,
 
@@ -862,8 +862,8 @@ if __name__ == "__main__":
             "seg_refine": True,
             "use_classification": False, # args.dataset == "thumos14"
             "act_reg": False,
-            "use_KK": True,
-            "use_QQ": True,
+            "use_KK": False,
+            "use_QQ": False,
             "cls_loss_coef": 2,
             "seg_loss_coef": 5,
             "iou_loss_coef": 2,
