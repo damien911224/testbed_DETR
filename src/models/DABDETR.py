@@ -364,14 +364,17 @@ class SetCriterion(nn.Module):
         for n_i in range(len(targets)):
             src_segments = outputs['pred_segments'][n_i].detach()
             tgt_segments = targets[n_i]['segments'].detach()
-            this_IoUs = list()
-            for t_i in range(len(tgt_segments)):
-                this_IoU = segment_ops.segment_iou(segment_ops.segment_cw_to_t1t2(tgt_segments[t_i]),
-                                                   segment_ops.segment_cw_to_t1t2(src_segments))
-                this_IoU = torch.max(this_IoU, dim=1)[0]
-                this_IoUs.append(this_IoU)
-            this_IoUs = torch.mean(this_IoUs)
-            IoUs.append(this_IoUs)
+            # this_IoUs = list()
+            # for t_i in range(len(tgt_segments)):
+            #     this_IoU = segment_ops.segment_iou(segment_ops.segment_cw_to_t1t2(tgt_segments[t_i]),
+            #                                        segment_ops.segment_cw_to_t1t2(src_segments))
+            #     this_IoU = torch.max(this_IoU, dim=1)[0]
+            #     this_IoUs.append(this_IoU)
+            this_IoU = segment_ops.segment_iou(segment_ops.segment_cw_to_t1t2(tgt_segments),
+                                               segment_ops.segment_cw_to_t1t2(src_segments))
+            this_IoU = torch.max(this_IoU, dim=1)[0]
+            this_IoU = torch.mean(this_IoU, dim=0)
+            IoUs.append(this_IoU)
         IoUs = torch.stack(IoUs).detach()
         IoU_weight = IoUs / 0.5
         print(IoU_weight.shape)
