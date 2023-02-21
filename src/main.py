@@ -120,11 +120,10 @@ def train(config):
             weight_dict = criterion.weight_dict
             losses = list()
             for k in loss_dict.keys():
-                if k in weight_dict.keys():
+                if k in list(weight_dict.keys()):
                     if "QQ" or "KK" in k:
                         if epoch < 30:
                             continue
-                    print(k)
                     losses.append(loss_dict[k] * weight_dict[k])
             losses = torch.stack(losses).sum()
             # losses = sum(loss_dict[k] * weight_dict[k] for k in loss_dict.keys() if k in weight_dict)
