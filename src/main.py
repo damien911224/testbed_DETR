@@ -121,6 +121,7 @@ def train(config):
             losses = list()
             print(loss_dict.keys())
             print(weight_dict.keys())
+            exit()
             for k in loss_dict.keys():
                 if k in weight_dict.keys():
                     if "QQ" or "KK" in k:
