@@ -358,54 +358,30 @@ class SetCriterion(nn.Module):
         """
         assert 'Q_weights' in outputs
         assert 'C_weights' in outputs
+        assert 'pred_segments' in outputs
+
+        idx = self._get_src_permutation_idx(indices)
+        src_segments = outputs['pred_segments'][idx]
+        target_segments = torch.cat([t['segments'][i] for t, (_, i) in zip(targets, indices)], dim=0)
+
+        loss_iou = 1 - torch.diag(segment_ops.segment_iou(
+            segment_ops.segment_cw_to_t1t2(src_segments),
+            segment_ops.segment_cw_to_t1t2(target_segments)))
+        print(loss_iou.shape)
+        exit()
 
         Q_weights = torch.mean(outputs["Q_weights"], dim=0)
         C_weights = outputs["C_weights"].detach()
 
-        N, Q, K = C_weights.shape
-
-        # C_indices = torch.argsort(-C_weights, dim=-1).float()
-        # QQ_weights = torch.bmm(C_indices, C_indices.transpose(1, 2))
-        # target_Q_weights = F.softmax(QQ_weights, dim=-1)
-
-        # C_weights = F.softmax(C_weights, dim=-1)
         QQ_weights = torch.bmm(C_weights, C_weights.transpose(1, 2))
-        # target_Q_weights = F.log_softmax(QQ_weights, dim=-1)
-        # target_Q_weights = F.softmax(QQ_weights * 25.0, dim=-1)
         QQ_weights = torch.sqrt(QQ_weights)
         target_Q_weights = QQ_weights / torch.sum(QQ_weights, dim=-1, keepdim=True)
-        # src_C_weights = C_weights.unsqueeze(2).tile(1, 1, Q, 1).flatten(0, 2)
-        # src_C_weights = (src_C_weights + 1.0e-7).log()
-        # tgt_C_weights = C_weights.unsqueeze(1).tile(1, Q, 1, 1).flatten(0, 2)
-        # tgt_C_weights = (tgt_C_weights + 1.0e-7).log()
-        # QQ_weights = F.kl_div(src_C_weights, tgt_C_weights, log_target=True, reduction="none").sum(-1)
-        # target_Q_weights = F.softmax(QQ_weights.view(N, Q, Q), dim=-1)
-        # temparature_scale = (torch.max(C_weights) / torch.max(QQ_weights)).detach()
-        # target_Q_weights = F.softmax(QQ_weights * temparature_scale, dim=-1)
-        # target_Q_weights = F.log_softmax(QQ_weights * 10000.0, dim=-1)
-        # target_Q_weights = F.log_softmax(torch.bmm(torch.log(C_weights),
-        #                                            torch.log(C_weights).transpose(1, 2)), dim=-1)
 
-        # print(torch.argsort(-target_Q_weights[0].detach().cpu(), dim=-1)[:10, :10].numpy())
-        # print(torch.max(target_Q_weights[0].detach().cpu(), dim=-1)[0][:10].numpy())
-        # print(torch.max(C_weights[0].detach().cpu(), dim=-1)[0][:10].numpy())
-        # print(target_Q_weights[0, 0].detach().cpu().numpy())
-        # print((torch.max(C_weights) - torch.max(target_Q_weights)).detach().cpu().numpy())
-
-        # NQ, Q
-        # src_QQ = F.normalize(Q_weights, dim=-1).flatten(0, 1)
         src_QQ = (Q_weights.flatten(0, 1) + 1.0e-7).log()
-        # src_QQ = F.log_softmax(Q_weights.flatten(0, 1), -1)
-        # NQ, Q
-        # tgt_QQ = F.normalize(target_Q_weights, dim=-1).flatten(0, 1)
         tgt_QQ = (target_Q_weights.flatten(0, 1) + 1.0e-7).log()
 
         losses = {}
 
-        # loss_QQ = 1.0 - torch.bmm(src_QQ.unsqueeze(-1), tgt_QQ.unsqueeze(1))
-        # loss_QQ = torch.square(src_QQ - dummy)
-        # loss_QQ = torch.sum(-tgt_QQ * torch.log(src_QQ + 1.0e-5), dim=-1)
-        # loss_QQ = loss_QQ.sum(dim=(1, 2))
         loss_QQ = F.kl_div(src_QQ, tgt_QQ, log_target=True, reduction="none").sum(-1)
         loss_QQ = loss_QQ.mean()
 
