@@ -375,6 +375,7 @@ class SetCriterion(nn.Module):
             this_IoU = torch.max(this_IoU, dim=1)[0]
             this_IoU = torch.mean(this_IoU, dim=0)
             IoUs.append(this_IoU)
+            print(this_IoU)
         IoUs = torch.stack(IoUs).detach()
         IoU_weight = IoUs / 0.5
         print(IoU_weight.shape)
