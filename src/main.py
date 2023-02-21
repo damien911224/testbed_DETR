@@ -816,13 +816,13 @@ if __name__ == "__main__":
             # test
             "nms_threshold": 0.65,
             "testing_step": 64,
-            "use_soft_nms": False,
+            "use_soft_nms": True,
             "multiclass_nms": True,
             "max_seg_num": 100,
             "min_score": 1.0e-9,
             "nms_sigma": 0.75,
             "voting_thresh": 0.9,  # [0.75, 0.90]
-            "iou_threshold": 0.65,
+            "iou_threshold": 0.10,
 
             # model
             "model_name": "SelfDETR",
@@ -844,8 +844,8 @@ if __name__ == "__main__":
             "seg_loss_coef": 5,
             "iou_loss_coef": 2,
             "act_loss_coef": 4,
-            "KK_loss_coef": 10,
-            "QQ_loss_coef": 10,
+            "KK_loss_coef": 5,
+            "QQ_loss_coef": 5,
             "set_cost_class": 2, # 6
             "set_cost_seg": 5,
             "set_cost_iou": 2,
