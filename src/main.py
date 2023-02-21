@@ -844,8 +844,8 @@ if __name__ == "__main__":
             "seg_loss_coef": 5,
             "iou_loss_coef": 2,
             "act_loss_coef": 4,
-            "KK_loss_coef": 5,
-            "QQ_loss_coef": 5,
+            "KK_loss_coef": 10,
+            "QQ_loss_coef": 10,
             "set_cost_class": 2, # 6
             "set_cost_seg": 5,
             "set_cost_iou": 2,
