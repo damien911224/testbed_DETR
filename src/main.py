@@ -121,7 +121,7 @@ def train(config):
             losses = list()
             # print(loss_dict.keys())
             # print(weight_dict.keys())
-            print([k in loss_dict.keys() if k in weight_dict])
+            print([k for k in loss_dict.keys() if k in weight_dict])
             exit()
             for k in loss_dict.keys():
                 if k in weight_dict.keys():
