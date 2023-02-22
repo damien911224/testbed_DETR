@@ -859,7 +859,7 @@ if __name__ == "__main__":
             "aux_loss": True,
             "seg_refine": True,
             "use_classification": False, # args.dataset == "thumos14"
-            "act_reg": False,
+            "act_reg": True,
             "use_KK": True,
             "use_QQ": True,
             "cls_loss_coef": 2,
