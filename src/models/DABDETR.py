@@ -29,8 +29,7 @@ from models.position_encoding import build_position_encoding
 from util.custom_loss import sigmoid_focal_loss
 from .dab_transformer import build_transformer
 
-# if not cfg.disable_cuda:
-#     from models.ops.roi_align import ROIAlign
+from models.ops.roi_align import ROIAlign
 
 
 def _get_clones(module, N):
@@ -109,19 +108,19 @@ class DABDETR(nn.Module):
             # hack implementation for segment refinement
             self.transformer.decoder.segment_embed = self.segment_embed
 
-        # if with_act_reg:
-        #     # RoIAlign params
-        #     self.roi_size = 16
-        #     self.roi_scale = 0
-        #     self.roi_extractor = ROIAlign(self.roi_size, self.roi_scale)
-        #     self.actionness_pred = nn.Sequential(
-        #         nn.Linear(self.roi_size * hidden_dim, hidden_dim),
-        #         nn.ReLU(inplace=True),
-        #         nn.Linear(hidden_dim, hidden_dim),
-        #         nn.ReLU(inplace=True),
-        #         nn.Linear(hidden_dim, 1),
-        #         nn.Sigmoid()
-        #     )
+        if with_act_reg:
+            # RoIAlign params
+            self.roi_size = 16
+            self.roi_scale = 0
+            self.roi_extractor = ROIAlign(self.roi_size, self.roi_scale)
+            self.actionness_pred = nn.Sequential(
+                nn.Linear(self.roi_size * hidden_dim, hidden_dim),
+                nn.ReLU(inplace=True),
+                nn.Linear(hidden_dim, hidden_dim),
+                nn.ReLU(inplace=True),
+                nn.Linear(hidden_dim, 1),
+                nn.Sigmoid()
+            )
 
     def _to_roi_align_format(self, rois, T, scale_factor=1):
         '''Convert RoIs to RoIAlign format.
@@ -218,9 +217,6 @@ class DABDETR(nn.Module):
             roi_features = self.roi_extractor(origin_feat, rois)
             roi_features = roi_features.view((B, N, -1))
             pred_actionness = self.actionness_pred(roi_features)
-
-            last_layer_cls = outputs_class[-1]
-            last_layer_reg = outputs_coord[-1]
 
             out['pred_actionness'] = pred_actionness
 
