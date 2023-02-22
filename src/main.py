@@ -382,7 +382,7 @@ def train(config):
                             scores = np.max(this_pred_logits, axis=-1)
 
                             if config.act_reg:
-                                scores *= pred_actionness
+                                scores *= pred_actionness[n_i]
 
                             valid_flags = p_e >= p_s
                             p_s = p_s[valid_flags]
