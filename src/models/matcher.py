@@ -87,8 +87,20 @@ class HungarianMatcher(nn.Module):
         C = C.view(bs, num_queries, -1).cpu()
 
         sizes = [len(v["segments"]) for v in targets]
-        indices = [linear_sum_assignment(c[i]) for i, c in enumerate(C.split(sizes, -1))]
-        return [(torch.as_tensor(i, dtype=torch.int64), torch.as_tensor(j, dtype=torch.int64)) for i, j in indices]
+
+        # indices = [linear_sum_assignment(c[i]) for i, c in enumerate(C.split(sizes, -1))]
+        # return [(torch.as_tensor(i, dtype=torch.int64), torch.as_tensor(j, dtype=torch.int64)) for i, j in indices]
+
+        indices = list()
+        for m_i in range(3):
+            this_indices = [linear_sum_assignment(c[i]) for i, c in enumerate(C.split(sizes, -1))]
+            this_indices = [(torch.as_tensor(i, dtype=torch.int64), torch.as_tensor(j, dtype=torch.int64))
+                            for i, j in this_indices]
+            indices.append(this_indices)
+            src_idx = self._get_src_permutation_idx(this_indices)
+            C[src_idx] = 10000
+
+        return indices
 
 
 def build_matcher(args):
