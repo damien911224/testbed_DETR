@@ -354,7 +354,7 @@ def train(config):
                         pred_segments = predictions["pred_segments"].detach().cpu()
                         pred_segments = segment_ops.segment_cw_to_t1t2(pred_segments).numpy()
                         if config.act_reg:
-                            pred_actionness = predictions["pred_actionness"].detach().cpu()
+                            pred_actionness = predictions["pred_actionness"].detach().cpu().numpy()
                         loss_dict = criterion(predictions, target_dict)
 
                         weight_dict = criterion.weight_dict
