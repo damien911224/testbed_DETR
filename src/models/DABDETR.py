@@ -275,11 +275,11 @@ class SetCriterion(nn.Module):
         src_logits = outputs['pred_logits']
         # idx = self._get_src_permutation_idx(indices)
 
-        # src_segments = outputs['pred_segments'][idx]
-        # target_segments = torch.cat([t['segments'][i] for t, (_, i) in zip(targets, indices)], dim=0)
-        # IoUs = segment_ops.segment_iou(segment_ops.segment_cw_to_t1t2(src_segments),
-        #                                segment_ops.segment_cw_to_t1t2(target_segments))
-        # IoUs = torch.diag(IoUs).detach()
+        src_segments = outputs['pred_segments'][idx]
+        target_segments = torch.cat([t['segments'][i] for t, (_, i) in zip(targets, indices)], dim=0)
+        IoUs = segment_ops.segment_iou(segment_ops.segment_cw_to_t1t2(src_segments),
+                                       segment_ops.segment_cw_to_t1t2(target_segments))
+        IoUs = torch.diag(IoUs).detach()
 
         target_classes = torch.full(src_logits.shape[:2], self.num_classes, dtype=torch.int64, device=src_logits.device)
         target_classes_onehot = torch.zeros([src_logits.shape[0], src_logits.shape[1], src_logits.shape[2] + 1],
