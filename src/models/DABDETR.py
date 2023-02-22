@@ -323,7 +323,8 @@ class SetCriterion(nn.Module):
            The target segments are expected in format (center, width), normalized by the video length.
         """
         assert 'pred_segments' in outputs
-        idx = self._get_src_permutation_idx(indices[0])
+        indices = indices[0]
+        idx = self._get_src_permutation_idx(indices)
         src_segments = outputs['pred_segments'][idx]
         target_segments = torch.cat([t['segments'][i] for t, (_, i) in zip(targets, indices)], dim=0)
 
