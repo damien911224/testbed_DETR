@@ -817,7 +817,7 @@ if __name__ == "__main__":
             "feature_frame_step_size": 8,
             "video_fps": 25.0,
             "temporal_width": 64,
-            "feature_width": 256 if args.dataset == "thumos14" else 512,
+            "feature_width": 256 if args.dataset == "thumos14" else 256,
             "dformat": "NDHWC",
             "copypaste_prob": 0.00,
 
@@ -828,7 +828,7 @@ if __name__ == "__main__":
             "validation_term": 10 if args.dataset == "thumos14" else 10,
             "ckpt_save_term": 100 if args.dataset == "thumos14" else 5,
             "display_term": 1,
-            "batch_size": 16 // args.num_gpus if args.dataset == "thumos14" else 16 // args.num_gpus,
+            "batch_size": 16 // args.num_gpus if args.dataset == "thumos14" else 64 // args.num_gpus,
             "num_workers": 48,
             "prefetch_factor": 2,
             "weight_decay": 1.0e-4,
