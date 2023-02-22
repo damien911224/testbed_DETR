@@ -353,7 +353,7 @@ def train(config):
                         pred_logits = predictions["pred_logits"].sigmoid().detach().cpu().numpy()
                         pred_segments = predictions["pred_segments"].detach().cpu()
                         pred_segments = segment_ops.segment_cw_to_t1t2(pred_segments).numpy()
-                        if config.use_act:
+                        if config.act_reg:
                             pred_actionness = predictions["pred_actionness"].detach().cpu()
                         loss_dict = criterion(predictions, target_dict)
 
@@ -381,7 +381,7 @@ def train(config):
                             p_e = this_pred_segments[..., 1]
                             scores = np.max(this_pred_logits, axis=-1)
 
-                            if config.use_act:
+                            if config.act_reg:
                                 scores *= pred_actionness
 
                             valid_flags = p_e >= p_s
