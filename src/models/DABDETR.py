@@ -216,7 +216,6 @@ class DABDETR(nn.Module):
             roi_features = self.roi_extractor(origin_feat, rois)
             roi_features = roi_features.view((B, N, -1))
             pred_actionness = self.actionness_pred(roi_features)
-            print(pred_actionness.shape)
 
             out['pred_actionness'] = pred_actionness
 
