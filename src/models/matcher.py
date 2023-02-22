@@ -98,7 +98,7 @@ class HungarianMatcher(nn.Module):
                             for i, j in this_indices]
             indices.append(this_indices)
             src_idx = self._get_src_permutation_idx(this_indices)
-            C[src_idx] = 10000
+            C[src_idx] = float("inf")
 
         return indices
 
