@@ -88,19 +88,19 @@ class HungarianMatcher(nn.Module):
 
         sizes = [len(v["segments"]) for v in targets]
 
-        # indices = [linear_sum_assignment(c[i]) for i, c in enumerate(C.split(sizes, -1))]
-        # return [(torch.as_tensor(i, dtype=torch.int64), torch.as_tensor(j, dtype=torch.int64)) for i, j in indices]
+        indices = [linear_sum_assignment(c[i]) for i, c in enumerate(C.split(sizes, -1))]
+        return [(torch.as_tensor(i, dtype=torch.int64), torch.as_tensor(j, dtype=torch.int64)) for i, j in indices]
 
-        indices = list()
-        for m_i in range(1):
-            this_indices = [linear_sum_assignment(c[i]) for i, c in enumerate(C.split(sizes, -1))]
-            this_indices = [(torch.as_tensor(i, dtype=torch.int64), torch.as_tensor(j, dtype=torch.int64))
-                            for i, j in this_indices]
-            indices.append(this_indices)
-            src_idx = self._get_src_permutation_idx(this_indices)
-            C[src_idx] = float("inf")
-
-        return indices
+        # indices = list()
+        # for m_i in range(1):
+        #     this_indices = [linear_sum_assignment(c[i]) for i, c in enumerate(C.split(sizes, -1))]
+        #     this_indices = [(torch.as_tensor(i, dtype=torch.int64), torch.as_tensor(j, dtype=torch.int64))
+        #                     for i, j in this_indices]
+        #     indices.append(this_indices)
+        #     src_idx = self._get_src_permutation_idx(this_indices)
+        #     C[src_idx] = float("inf")
+        #
+        # return indices
 
 
     def _get_src_permutation_idx(self, indices):
