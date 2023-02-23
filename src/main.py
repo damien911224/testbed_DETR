@@ -847,17 +847,17 @@ if __name__ == "__main__":
 
             # train
             "seed": 2023,
-            "epochs": 3000 if args.dataset == "thumos14" else 100,
+            "epochs": 3000 if args.dataset == "thumos14" else 120,
             "lr": 2.0e-4 if args.dataset == "thumos14" else 1.0e-4,
             "validation_term": 10 if args.dataset == "thumos14" else 10,
             "ckpt_save_term": 100 if args.dataset == "thumos14" else 5,
             "display_term": 1,
             "batch_size": 16 // args.num_gpus if args.dataset == "thumos14" else 16 // args.num_gpus,
-            "num_workers": 48,
+            "num_workers": 2,
             "prefetch_factor": 2,
             "weight_decay": 1.0e-4,
             "clip_norm": 0.1,
-            "lr_decay_steps": (2500, 2800) if args.dataset == "thumos14" else (60, 80),
+            "lr_decay_steps": (2500, 2800) if args.dataset == "thumos14" else (80, 100),
             "use_wandb": False,
 
             # test
