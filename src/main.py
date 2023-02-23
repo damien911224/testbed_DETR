@@ -863,7 +863,7 @@ if __name__ == "__main__":
             "dec_layers": 4 if args.dataset == "thumos14" else 4, # 4
             "aux_loss": True,
             "seg_refine": True,
-            "use_classification": True, # args.dataset == "thumos14"
+            "use_classification": args.dataset == "thumos14", # args.dataset == "thumos14"
             "act_reg": False,
             "use_KK": True,
             "use_QQ": True,
