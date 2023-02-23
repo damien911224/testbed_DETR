@@ -50,10 +50,11 @@ def train(config):
     summary_folder = os.path.join(config.root_path, "networks", "summaries",
                                   "{}_{}_{}".format(model_name, config.dataset, train_date))
 
-    wandb.init(project=config.model_name, config=dict(config), tags=[config.dataset, config.postfix])
-    wandb.run.name = "{}_{}_{}{}".format(model_name, config.dataset, train_date,
-                                         "_{}".format(config.postfix) if config.postfix is not None else "")
-    wandb.run.save()
+    if config.use_wandb:
+        wandb.init(project=config.model_name, config=dict(config), tags=[config.dataset, config.postfix])
+        wandb.run.name = "{}_{}_{}{}".format(model_name, config.dataset, train_date,
+                                             "_{}".format(config.postfix) if config.postfix is not None else "")
+        wandb.run.save()
 
     if config.postfix is not None:
         save_ckpt_file_folder += "_{}".format(config.postfix)
@@ -172,7 +173,8 @@ def train(config):
         epoch_preprocessing_time /= float(epoch_batch_iteration)
         for loss_name, loss_value in epoch_losses.items():
             train_summary_writer.add_scalar(loss_name, loss_value / float(epoch_batch_iteration), epoch)
-            wandb.log({"train": {loss_name: loss_value / float(epoch_batch_iteration)}}, step=epoch)
+            if config.use_wandb:
+                wandb.log({"train": {loss_name: loss_value / float(epoch_batch_iteration)}}, step=epoch)
 
         if epoch % config.ckpt_save_term == 0:
             torch.save(model.state_dict(), os.path.join(save_ckpt_file_folder, "weights-{}.pt".format(epoch)))
@@ -698,15 +700,17 @@ def train(config):
                         this_image = KK_images[k_i]
                         validation_summary_writer.add_image("KK_{:02d}".format(k_i + 1), this_image, epoch,
                                                             dataformats="HWC")
-                        wandb_image = wandb.Image(this_image)
-                        wandb.log({"validation": {"KK_{:02d}".format(k_i + 1): wandb_image}}, step=epoch)
+                        if config.use_wandb:
+                            wandb_image = wandb.Image(this_image)
+                            wandb.log({"validation": {"KK_{:02d}".format(k_i + 1): wandb_image}}, step=epoch)
 
                     for q_i in range(len(QQ_images)):
                         this_image = QQ_images[q_i]
                         validation_summary_writer.add_image("QQ_{:02d}".format(q_i + 1), this_image, epoch,
                                                             dataformats="HWC")
-                        wandb_image = wandb.Image(this_image)
-                        wandb.log({"validation": {"QQ_{:02d}".format(q_i + 1): wandb_image}}, step=epoch)
+                        if config.use_wandb:
+                            wandb_image = wandb.Image(this_image)
+                            wandb.log({"validation": {"QQ_{:02d}".format(q_i + 1): wandb_image}}, step=epoch)
 
                     if config.dataset == "activitynet":
                         try:
@@ -724,9 +728,11 @@ def train(config):
                     for loss_name, loss_value in validation_losses.items():
                         validation_summary_writer.add_scalar(loss_name, loss_value / float(validation_batch_index),
                                                              epoch)
-                        wandb.log({"validation": {loss_name: loss_value / float(validation_batch_index)}}, step=epoch)
+                        if config.use_wandb:
+                            wandb.log({"validation": {loss_name: loss_value / float(validation_batch_index)}}, step=epoch)
                     validation_summary_writer.add_scalar("mAP", validation_mAP, epoch)
-                    wandb.log({"validation": {"mAP": validation_mAP}}, step=epoch)
+                    if config.use_wandb:
+                        wandb.log({"validation": {"mAP": validation_mAP}}, step=epoch)
 
                     validation_quality = validation_mAP
 
@@ -852,6 +858,7 @@ if __name__ == "__main__":
             "weight_decay": 1.0e-4,
             "clip_norm": 0.1,
             "lr_decay_steps": (2500, 2800) if args.dataset == "thumos14" else (60, 80),
+            "use_wandb": False,
 
             # test
             "nms_threshold": 0.65,
