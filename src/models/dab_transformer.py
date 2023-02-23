@@ -297,8 +297,8 @@ class TransformerEncoderLayer(nn.Module):
     def __init__(self, d_model, nhead, dim_feedforward=2048, dropout=0.1,
                  activation="relu", normalize_before=False):
         super().__init__()
-        self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
-        # self.self_attn = RelativeAttention(d_model, nhead, dropout=dropout)
+        # self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
+        self.self_attn = RelativeAttention(d_model, nhead, dropout=dropout)
         # Implementation of Feedforward model
         self.linear1 = nn.Linear(d_model, dim_feedforward)
         self.dropout = nn.Dropout(dropout)
@@ -321,14 +321,14 @@ class TransformerEncoderLayer(nn.Module):
                 src_mask: Optional[Tensor] = None,
                 src_key_padding_mask: Optional[Tensor] = None,
                 pos: Optional[Tensor] = None):
-        q = k = self.with_pos_embed(src, pos)
-        src2, K_weights = self.self_attn(q, k, value=src, attn_mask=src_mask, key_padding_mask=src_key_padding_mask)
+        # q = k = self.with_pos_embed(src, pos)
+        # src2, K_weights = self.self_attn(q, k, value=src, attn_mask=src_mask, key_padding_mask=src_key_padding_mask)
 
-        q = k = src.transpose(1, 0)
-        # q = k = self.with_pos_embed(src, pos).transpose(1, 0)
-        # src2, K_weights = self.self_attn(q, k, value=src.transpose(1, 0),
-        #                                  attn_mask=src_mask, key_padding_mask=src_key_padding_mask)
-        # src2 = src2.transpose(1, 0)
+        # q = k = src.transpose(1, 0)
+        q = k = self.with_pos_embed(src, pos).transpose(1, 0)
+        src2, K_weights = self.self_attn(q, k, value=src.transpose(1, 0),
+                                         attn_mask=src_mask, key_padding_mask=src_key_padding_mask)
+        src2 = src2.transpose(1, 0)
 
         # print(torch.argsort(-K_weights[0].detach().cpu(), dim=-1)[:10, :10].numpy())
         # print(torch.max(K_weights[0].detach().cpu(), dim=-1)[0][:10])
@@ -351,14 +351,14 @@ class TransformerDecoderLayer(nn.Module):
         super().__init__()
         # Decoder Self-Attention
         if not rm_self_attn_decoder:
-            self.sa_qcontent_proj = nn.Linear(d_model, d_model)
-            self.sa_qpos_proj = nn.Linear(d_model, d_model)
-            self.sa_kcontent_proj = nn.Linear(d_model, d_model)
-            self.sa_kpos_proj = nn.Linear(d_model, d_model)
-            self.sa_v_proj = nn.Linear(d_model, d_model)
-            self.self_attn = MultiheadAttention(d_model, nhead, dropout=dropout, vdim=d_model)
+            # self.sa_qcontent_proj = nn.Linear(d_model, d_model)
+            # self.sa_qpos_proj = nn.Linear(d_model, d_model)
+            # self.sa_kcontent_proj = nn.Linear(d_model, d_model)
+            # self.sa_kpos_proj = nn.Linear(d_model, d_model)
+            # self.sa_v_proj = nn.Linear(d_model, d_model)
+            # self.self_attn = MultiheadAttention(d_model, nhead, dropout=dropout, vdim=d_model)
 
-            # self.self_attn = RelativeAttention(d_model, nhead, dropout=dropout)
+            self.self_attn = RelativeAttention(d_model, nhead, dropout=dropout)
 
             self.norm1 = nn.LayerNorm(d_model)
             self.dropout1 = nn.Dropout(dropout)
@@ -404,30 +404,30 @@ class TransformerDecoderLayer(nn.Module):
                      
         # ========== Begin of Self-Attention =============
         if not self.rm_self_attn_decoder and True:
-            q_content = self.sa_qcontent_proj(tgt)      # target is the input of the first decoder layer. zero by default.
-            q_pos = self.sa_qpos_proj(query_pos)
-            k_content = self.sa_kcontent_proj(tgt)
-            k_pos = self.sa_kpos_proj(query_pos)
-            v = self.sa_v_proj(tgt)
+            # q_content = self.sa_qcontent_proj(tgt)      # target is the input of the first decoder layer. zero by default.
+            # q_pos = self.sa_qpos_proj(query_pos)
+            # k_content = self.sa_kcontent_proj(tgt)
+            # k_pos = self.sa_kpos_proj(query_pos)
+            # v = self.sa_v_proj(tgt)
+            #
+            # # num_queries, bs, n_model = q_content.shape
+            # hw, _, _ = k_content.shape
+            #
+            # # q = torch.cat([q_content, q_pos], dim=-1)
+            # # k = torch.cat([k_content, k_pos], dim=-1)
+            #
+            # q = q_content + q_pos
+            # k = k_content + k_pos
+            #
+            # # q = q_content
+            # # k = k_content
+            #
+            # tgt2, Q_weights = self.self_attn(q, k, value=v, attn_mask=tgt_mask, key_padding_mask=tgt_key_padding_mask)
 
-            # num_queries, bs, n_model = q_content.shape
-            hw, _, _ = k_content.shape
-
-            # q = torch.cat([q_content, q_pos], dim=-1)
-            # k = torch.cat([k_content, k_pos], dim=-1)
-
-            q = q_content + q_pos
-            k = k_content + k_pos
-
-            # q = q_content
-            # k = k_content
-
-            tgt2, Q_weights = self.self_attn(q, k, value=v, attn_mask=tgt_mask, key_padding_mask=tgt_key_padding_mask)
-
-            # q = k = self.with_pos_embed(tgt, query_pos).transpose(1, 0)
-            # tgt2, Q_weights = self.self_attn(q, k, value=tgt.transpose(1, 0),
-            #                                  attn_mask=tgt_mask, key_padding_mask=tgt_key_padding_mask)
-            # tgt2 = tgt2.transpose(1, 0)
+            q = k = self.with_pos_embed(tgt, query_pos).transpose(1, 0)
+            tgt2, Q_weights = self.self_attn(q, k, value=tgt.transpose(1, 0),
+                                             attn_mask=tgt_mask, key_padding_mask=tgt_key_padding_mask)
+            tgt2 = tgt2.transpose(1, 0)
 
             # ========== End of Self-Attention =============
 
