@@ -822,7 +822,7 @@ if __name__ == "__main__":
             "feature_frame_step_size": 8,
             "video_fps": 25.0,
             "temporal_width": 64,
-            "feature_width": 512 if args.dataset == "thumos14" else 256,
+            "feature_width": 256 if args.dataset == "thumos14" else 256,
             "dformat": "NDHWC",
             "copypaste_prob": 0.00,
 
@@ -863,7 +863,7 @@ if __name__ == "__main__":
             "dec_layers": 4 if args.dataset == "thumos14" else 4, # 4
             "aux_loss": True,
             "seg_refine": True,
-            "use_classification": False, # args.dataset == "thumos14"
+            "use_classification": True, # args.dataset == "thumos14"
             "act_reg": False,
             "use_KK": True,
             "use_QQ": True,
