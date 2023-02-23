@@ -15,6 +15,7 @@ import seaborn as sn
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import wandb
 from tensorboardX import SummaryWriter
 
 np.seterr(all="ignore")
@@ -25,7 +26,6 @@ from models.DABDETR import build
 from datasets import Datasets
 from util.nms import batched_nms
 from util import segment_ops
-
 
 def train(config):
     random.seed(config.seed)
@@ -49,6 +49,10 @@ def train(config):
                                          "save", "{}_{}_{}".format(model_name, config.dataset, train_date))
     summary_folder = os.path.join(config.root_path, "networks", "summaries",
                                   "{}_{}_{}".format(model_name, config.dataset, train_date))
+
+    project_name = "{}_{}_{}{}".format(model_name, config.dataset, train_date,
+                                       config.postfix if config.postfix is not None else "")
+    wandb.init(project=project_name, config=config, tags=[config.dataset, config.postfix])
 
     if config.postfix is not None:
         save_ckpt_file_folder += "_{}".format(config.postfix)
@@ -167,6 +171,7 @@ def train(config):
         epoch_preprocessing_time /= float(epoch_batch_iteration)
         for loss_name, loss_value in epoch_losses.items():
             train_summary_writer.add_scalar(loss_name, loss_value / float(epoch_batch_iteration), epoch)
+            wandb.log({"train": {loss_name: loss_value / float(epoch_batch_iteration)}}, step=epoch)
 
         if epoch % config.ckpt_save_term == 0:
             torch.save(model.state_dict(), os.path.join(save_ckpt_file_folder, "weights-{}.pt".format(epoch)))
@@ -692,10 +697,15 @@ def train(config):
                         this_image = KK_images[k_i]
                         validation_summary_writer.add_image("KK_{:02d}".format(k_i + 1), this_image, epoch,
                                                             dataformats="HWC")
+                        wandb_image = wandb.Image(this_image)
+                        wandb.log({"validation": {"KK_{:02d}".format(k_i + 1): wandb_image}}, step=epoch)
+
                     for q_i in range(len(QQ_images)):
                         this_image = QQ_images[q_i]
                         validation_summary_writer.add_image("QQ_{:02d}".format(q_i + 1), this_image, epoch,
                                                             dataformats="HWC")
+                        wandb_image = wandb.Image(this_image)
+                        wandb.log({"validation": {"QQ_{:02d}".format(q_i + 1): wandb_image}}, step=epoch)
 
                     if config.dataset == "activitynet":
                         try:
@@ -713,7 +723,9 @@ def train(config):
                     for loss_name, loss_value in validation_losses.items():
                         validation_summary_writer.add_scalar(loss_name, loss_value / float(validation_batch_index),
                                                              epoch)
+                        wandb.log({"validation": {loss_name: loss_value / float(validation_batch_index)}}, step=epoch)
                     validation_summary_writer.add_scalar("mAP", validation_mAP, epoch)
+                    wandb.log({"validation": {"mAP": validation_mAP}}, step=epoch)
 
                     validation_quality = validation_mAP
 
