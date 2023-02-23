@@ -801,7 +801,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
 
     argparser.add_argument("--num_gpus", type=int, default=1)
-    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][1])
+    argparser.add_argument("--dataset", type=str, default=["thumos14", "activitynet"][0])
     argparser.add_argument("--postfix", type=str, default=None)
 
     args = argparser.parse_args()
@@ -822,13 +822,13 @@ if __name__ == "__main__":
             "feature_frame_step_size": 8,
             "video_fps": 25.0,
             "temporal_width": 64,
-            "feature_width": 256 if args.dataset == "thumos14" else 256,
+            "feature_width": 512 if args.dataset == "thumos14" else 256,
             "dformat": "NDHWC",
             "copypaste_prob": 0.00,
 
             # train
             "seed": 2023,
-            "epochs": 3000 if args.dataset == "thumos14" else 100,
+            "epochs": 300 if args.dataset == "thumos14" else 100,
             "lr": 2.0e-4 if args.dataset == "thumos14" else 1.0e-4,
             "validation_term": 10 if args.dataset == "thumos14" else 10,
             "ckpt_save_term": 100 if args.dataset == "thumos14" else 5,
@@ -838,7 +838,7 @@ if __name__ == "__main__":
             "prefetch_factor": 2,
             "weight_decay": 1.0e-4,
             "clip_norm": 0.1,
-            "lr_decay_steps": (60, 80) if args.dataset == "thumos14" else (60, 80),
+            "lr_decay_steps": (250, 280) if args.dataset == "thumos14" else (60, 80),
 
             # test
             "nms_threshold": 0.65,
@@ -855,7 +855,7 @@ if __name__ == "__main__":
             "model_name": "SelfDETR",
             "position_embedding": "sine",
             "hidden_dim": 256,
-            "num_queries": 40 if args.dataset == "thumos14" else 100,
+            "num_queries": 100 if args.dataset == "thumos14" else 100,
             "dropout": 0.1,
             "nheads": 8,
             "dim_feedforward": 1024,  # 1024
