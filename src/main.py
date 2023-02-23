@@ -828,7 +828,7 @@ if __name__ == "__main__":
 
             # train
             "seed": 2023,
-            "epochs": 300 if args.dataset == "thumos14" else 100,
+            "epochs": 3000 if args.dataset == "thumos14" else 100,
             "lr": 2.0e-4 if args.dataset == "thumos14" else 1.0e-4,
             "validation_term": 10 if args.dataset == "thumos14" else 10,
             "ckpt_save_term": 100 if args.dataset == "thumos14" else 5,
@@ -838,7 +838,7 @@ if __name__ == "__main__":
             "prefetch_factor": 2,
             "weight_decay": 1.0e-4,
             "clip_norm": 0.1,
-            "lr_decay_steps": (250, 280) if args.dataset == "thumos14" else (60, 80),
+            "lr_decay_steps": (2500, 2800) if args.dataset == "thumos14" else (60, 80),
 
             # test
             "nms_threshold": 0.65,
