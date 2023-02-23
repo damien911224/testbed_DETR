@@ -50,9 +50,9 @@ def train(config):
     summary_folder = os.path.join(config.root_path, "networks", "summaries",
                                   "{}_{}_{}".format(model_name, config.dataset, train_date))
 
-    project_name = "{}_{}_{}{}".format(model_name, config.dataset, train_date,
-                                       config.postfix if config.postfix is not None else "")
-    wandb.init(project=project_name, config=config, tags=[config.dataset, config.postfix])
+    wandb.init(project=config.model_name, config=config, tags=[config.dataset, config.postfix])
+    wandb.run.name = "{}_{}_{}".format(model_name, config.dataset, train_date)
+    wandb.run.save()
 
     if config.postfix is not None:
         save_ckpt_file_folder += "_{}".format(config.postfix)
