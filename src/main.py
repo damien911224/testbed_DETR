@@ -50,7 +50,7 @@ def train(config):
     summary_folder = os.path.join(config.root_path, "networks", "summaries",
                                   "{}_{}_{}".format(model_name, config.dataset, train_date))
 
-    wandb.init(project=config.model_name, config=config, tags=[config.dataset, config.postfix])
+    wandb.init(project=config.model_name, config=dict(config), tags=[config.dataset, config.postfix])
     wandb.run.name = "{}_{}_{}{}".format(model_name, config.dataset, train_date,
                                          "_{}".format(config.postfix) if config.postfix is not None else "")
     wandb.run.save()
