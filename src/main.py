@@ -171,10 +171,17 @@ def train(config):
         print()
         epoch_training_time /= float(epoch_batch_iteration)
         epoch_preprocessing_time /= float(epoch_batch_iteration)
+
+        if config.use_wandb:
+            wandb_log_dict = dict({"train": dict()})
+
         for loss_name, loss_value in epoch_losses.items():
             train_summary_writer.add_scalar(loss_name, loss_value / float(epoch_batch_iteration), epoch)
             if config.use_wandb:
-                wandb.log({"train": {loss_name: loss_value / float(epoch_batch_iteration)}}, step=epoch)
+                wandb_log_dict["train"][loss_name] = loss_value / float(epoch_batch_iteration)
+
+        if config.use_wandb:
+            wandb.log(data=wandb_log_dict, step=epoch)
 
         if epoch % config.ckpt_save_term == 0:
             torch.save(model.state_dict(), os.path.join(save_ckpt_file_folder, "weights-{}.pt".format(epoch)))
@@ -696,13 +703,16 @@ def train(config):
 
                     print()
 
+                    if config.use_wandb:
+                        wandb_log_dict = dict({"validation": dict()})
+
                     for k_i in range(len(KK_images)):
                         this_image = KK_images[k_i]
                         validation_summary_writer.add_image("KK_{:02d}".format(k_i + 1), this_image, epoch,
                                                             dataformats="HWC")
                         if config.use_wandb:
                             wandb_image = wandb.Image(this_image)
-                            wandb.log({"validation": {"KK_{:02d}".format(k_i + 1): wandb_image}}, step=epoch)
+                            wandb_log_dict["validation"]["KK_{:02d}".format(k_i + 1)] = wandb_image
 
                     for q_i in range(len(QQ_images)):
                         this_image = QQ_images[q_i]
@@ -710,7 +720,7 @@ def train(config):
                                                             dataformats="HWC")
                         if config.use_wandb:
                             wandb_image = wandb.Image(this_image)
-                            wandb.log({"validation": {"QQ_{:02d}".format(q_i + 1): wandb_image}}, step=epoch)
+                            wandb_log_dict["validation"]["QQ_{:02d}".format(q_i + 1)] = wandb_image
 
                     if config.dataset == "activitynet":
                         try:
@@ -729,10 +739,13 @@ def train(config):
                         validation_summary_writer.add_scalar(loss_name, loss_value / float(validation_batch_index),
                                                              epoch)
                         if config.use_wandb:
-                            wandb.log({"validation": {loss_name: loss_value / float(validation_batch_index)}}, step=epoch)
+                            wandb_log_dict["validation"][loss_name] = loss_value / float(validation_batch_index)
                     validation_summary_writer.add_scalar("mAP", validation_mAP, epoch)
                     if config.use_wandb:
-                        wandb.log({"validation": {"mAP": validation_mAP}}, step=epoch)
+                        wandb_log_dict["validation"]["mAP"] = validation_mAP
+
+                    if config.use_wandb:
+                        wandb.log(data=wandb_log_dict, step=epoch)
 
                     validation_quality = validation_mAP
 
