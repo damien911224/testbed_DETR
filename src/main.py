@@ -52,9 +52,9 @@ def train(config):
 
     if config.use_wandb:
         wandb.init(project=config.model_name, config=dict(config), tags=[config.dataset, config.postfix])
-        wandb.run.name = "{}_{}_{}{}".format(model_name, config.dataset, train_date,
-                                             "_{}".format(config.postfix) if config.postfix is not None else "")
-        wandb.run.save()
+        # wandb.run.name = "{}_{}_{}{}".format(model_name, config.dataset, train_date,
+        #                                      "_{}".format(config.postfix) if config.postfix is not None else "")
+        # wandb.run.save()
 
     if config.postfix is not None:
         save_ckpt_file_folder += "_{}".format(config.postfix)
