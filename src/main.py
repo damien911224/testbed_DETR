@@ -858,7 +858,7 @@ if __name__ == "__main__":
             "weight_decay": 1.0e-4,
             "clip_norm": 0.1,
             "lr_decay_steps": (2500, 2800) if args.dataset == "thumos14" else (80, 100),
-            "use_wandb": False,
+            "use_wandb": True,
 
             # test
             "nms_threshold": 0.65,
