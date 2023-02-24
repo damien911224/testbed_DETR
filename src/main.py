@@ -575,7 +575,7 @@ def train(config):
 
                         if validation_batch_index < 1:
                             for n_i in range(len(identities))[:3]:
-                                QK = predictions["C_weights"][n_i].detach().cpu()
+                                QK = predictions["C_weights"][-1][n_i].detach().cpu()
                                 tgt_KK = torch.sqrt(torch.matmul(QK.transpose(0, 1), QK))
                                 tgt_KK = (tgt_KK / torch.sum(tgt_KK, dim=-1, keepdim=True)).numpy()
                                 tgt_QQ = torch.sqrt(torch.matmul(QK, QK.transpose(0, 1)))
