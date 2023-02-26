@@ -91,6 +91,9 @@ def train(config):
     train_summary_writer = SummaryWriter(logdir=train_summary_file_path)
     validation_summary_writer = SummaryWriter(logdir=validation_summary_file_path)
     batch_iteration = 0
+    if config.dataset == "activitynet":
+        with open(os.path.join(datasets.meta_folder, "activity_net_1_3_new.json"), "r") as fp:
+            new_GT_json = json.load(fp)
     for epoch in range(1, config.epochs + 1, 1):
         model.train()
         epoch_losses = dict()
@@ -433,7 +436,9 @@ def train(config):
                         int(math.ceil(float(validation_data.data_count) / float(config.batch_size * config.num_gpus)))
 
                     with open(datasets.target_path, "r") as json_fp:
-                        ground_truth_json = json.loads(json_fp.read())
+                        first_ground_truth_json = json.loads(json_fp.read())
+                    ground_truth_json = dict(first_ground_truth_json)
+                    ground_truth_json["database"] = dict()
                     detection_prediction_json = dict({"version": "VERSION 1.3", "results": {},
                                                       "external_data":
                                                           {"used": True,
@@ -480,6 +485,8 @@ def train(config):
                         frame_lengths = frame_lengths.numpy()
                         for n_i in range(len(identities)):
                             identity = identities[n_i]
+                            if identity not in new_GT_json["database"]:
+                                continue
                             frame_length = frame_lengths[n_i]
                             cuhk_classification_scores = np.array(all_anet2017_cuhk["results"][identity])
 
@@ -574,6 +581,14 @@ def train(config):
                                 if config.dataset == "thumos14" and label == "CliffDiving":
                                     detection_prediction_json["results"][identity].append(
                                         {"label": "Diving", "score": score, "segment": time_intervals})
+
+                            for annotation in first_ground_truth_json["database"][identity]["annotations"]:
+                                if identity in ground_truth_json["database"]:
+                                    ground_truth_json["database"][identity]["annotations"].append(annotation)
+                                else:
+                                    ground_truth_json["database"][identity] = \
+                                        dict(first_ground_truth_json["database"][identity])
+                                    ground_truth_json["database"][identity]["annotations"] = [annotation]
 
                         if validation_batch_index < 1:
                             for n_i in range(len(identities))[:3]:
@@ -745,6 +760,10 @@ def train(config):
                     validation_summary_writer.add_scalar("mAP", validation_mAP, epoch)
                     if config.use_wandb:
                         wandb_log_dict["validation"]["mAP"] = validation_mAP
+                        if validation_mAP > 0.0:
+                            wandb_log_dict["validation"]["AP@0.50"] = interpolated_mAP[0]
+                            wandb_log_dict["validation"]["AP@0.75"] = interpolated_mAP[5]
+                            wandb_log_dict["validation"]["AP@0.95"] = interpolated_mAP[-1]
 
                     if config.use_wandb:
                         wandb.log(data=wandb_log_dict, step=epoch)
@@ -856,7 +875,7 @@ if __name__ == "__main__":
             "feature_frame_step_size": 8,
             "video_fps": 25.0,
             "temporal_width": 64,
-            "feature_width": 256 if args.dataset == "thumos14" else 512,
+            "feature_width": 256 if args.dataset == "thumos14" else 768,
             "dformat": "NDHWC",
             "copypaste_prob": 0.00,
 

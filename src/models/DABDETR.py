@@ -480,8 +480,8 @@ class SetCriterion(nn.Module):
 
         # NK, K
 
-        # C_weights = torch.mean(outputs["C_weights"], dim=0).detach()
-        C_weights = outputs["C_weights"][-1].detach()
+        C_weights = torch.mean(outputs["C_weights"], dim=0).detach()
+        # C_weights = outputs["C_weights"][-1].detach()
         KK_weights = torch.bmm(C_weights.transpose(1, 2), C_weights)
         KK_weights = torch.sqrt(KK_weights + 1.0e-7)
         target_K_weights = KK_weights / torch.sum(KK_weights, dim=-1, keepdim=True)
