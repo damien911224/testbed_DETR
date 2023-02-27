@@ -1230,6 +1230,10 @@ def test(config):
                                                  config.dataset,
                                                  saved_date, saved_postfix))
     result_folder = os.path.join(data_folder, "results")
+    try:
+        os.mkdir(result_folder)
+    except OSError:
+        pass
 
     result_string = "=" * 90 + "\n"
     result_string += "{}_{}_{} Testing Results\n\n".format(config.model_name, config.dataset, saved_postfix)
