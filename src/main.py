@@ -804,8 +804,6 @@ def test(config):
     saved_postfix = "v2_base"
     target_epoch = 110
 
-    config.batch_size = 1
-
     model, criterion = build(config)
     datasets = Datasets(config)
 
