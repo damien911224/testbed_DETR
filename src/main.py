@@ -1424,6 +1424,6 @@ if __name__ == "__main__":
 
     config = EasyDict(config)
 
-    # train(config=config)
+    train(config=config)
 
-    test(config=config)
+    # test(config=config)
