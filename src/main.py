@@ -1383,7 +1383,7 @@ if __name__ == "__main__":
             "use_wandb": True,
 
             # test
-            "nms_threshold": 0.75, # 0.65
+            "nms_threshold": 0.65, # 0.65
             "testing_step": 64,
             "use_soft_nms": False,
             "multiclass_nms": True,
@@ -1413,8 +1413,8 @@ if __name__ == "__main__":
             "seg_loss_coef": 5,
             "iou_loss_coef": 2,
             "act_loss_coef": 4,
-            "KK_loss_coef": 5,
-            "QQ_loss_coef": 5,
+            "KK_loss_coef": 7,
+            "QQ_loss_coef": 7,
             "set_cost_class": 2, # 6
             "set_cost_seg": 5,
             "set_cost_iou": 2,
