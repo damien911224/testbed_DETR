@@ -1383,7 +1383,7 @@ if __name__ == "__main__":
             "use_wandb": True,
 
             # test
-            "nms_threshold": 0.40, # 0.65
+            "nms_threshold": 0.60, # 0.65
             "testing_step": 64,
             "use_soft_nms": False,
             "multiclass_nms": True,
