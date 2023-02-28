@@ -1363,7 +1363,7 @@ if __name__ == "__main__":
             "feature_frame_step_size": 8,
             "video_fps": 25.0,
             "temporal_width": 64,
-            "feature_width": 256 if args.dataset == "thumos14" else 768,
+            "feature_width": 256 if args.dataset == "thumos14" else 256,
             "dformat": "NDHWC",
             "copypaste_prob": 0.00,
 
@@ -1413,8 +1413,8 @@ if __name__ == "__main__":
             "seg_loss_coef": 5,
             "iou_loss_coef": 2,
             "act_loss_coef": 4,
-            "KK_loss_coef": 10,
-            "QQ_loss_coef": 10,
+            "KK_loss_coef": 5,
+            "QQ_loss_coef": 5,
             "set_cost_class": 2, # 6
             "set_cost_seg": 5,
             "set_cost_iou": 2,
