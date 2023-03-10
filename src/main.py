@@ -1284,6 +1284,7 @@ def test(config):
 
     print(result_string)
 
+
 def nms(proposals, threshold=0.65):
     proposals = np.copy(sorted(proposals, key=lambda x: x[-1]))
 
